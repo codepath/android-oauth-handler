@@ -34,15 +34,21 @@ public abstract class OAuthBaseClient {
         this.baseUrl = consumerUrl;
         client = new OAuthAsyncHttpClient(apiClass, consumerKey,
                 consumerSecret, callbackUrl, new OAuthAsyncHttpClient.OAuthTokenHandler() {
+        	
+        	// Store request token and launch the authorization URL in the browser
             @Override
             public void onReceivedRequestToken(Token requestToken, String authorizeUrl) {
-            	editor.putString("request_token", requestToken.getToken());
-                editor.putString("request_token_secret", requestToken.getSecret());
-                editor.commit();
+            	if (requestToken != null) { // store for OAuth1.0a
+            		editor.putString("request_token", requestToken.getToken());
+                	editor.putString("request_token_secret", requestToken.getSecret());
+                    editor.commit();
+            	}
+            	// Launch the authorization URL in the browser
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizeUrl + "&perms=delete"));
                 OAuthBaseClient.this.context.startActivity(intent);
             }
-
+            
+            // Store the access token in preferences, set the token in the client and fire the success callback
             @Override
             public void onReceivedAccessToken(Token accessToken) {
                 client.setAccessToken(accessToken);
@@ -56,12 +62,14 @@ public abstract class OAuthBaseClient {
             public void onFailure(Exception e) {
                 accessHandler.onLoginFailure(e);
             }
+            
         });
 
         this.context = c;
-        this.prefs = this.context.getSharedPreferences("OAuth", 0);
+        // Store preferences namespaced by the class and consumer key used
+        this.prefs = this.context.getSharedPreferences("OAuth_" + apiClass.getSimpleName() + "_" + consumerKey, 0);
         this.editor = this.prefs.edit();
-        // Set access token if already stored
+        // Set access token in the client if already stored in preferences
         if (this.checkAccessToken() != null) {
             client.setAccessToken(this.checkAccessToken());
         }

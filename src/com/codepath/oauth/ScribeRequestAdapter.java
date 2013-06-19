@@ -11,11 +11,15 @@ import java.util.Map;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.utils.URLEncodedUtils;
 import org.scribe.model.OAuthBaseRequest;
+import org.scribe.model.OAuthConstants;
 import org.scribe.model.ParameterList;
 import org.scribe.model.Verb;
+
+import android.net.Uri;
 
 /* 
  * Implements the scribe-java Request interface allowing 
@@ -48,10 +52,14 @@ public class ScribeRequestAdapter implements OAuthBaseRequest {
 		this.httpUriRequest.addHeader(key, value);
 	}
 	
-	// Adds query string parameters (cannot be done)
+	// Add query string parameters to the HTTP Request.
 	@Override
 	public void addQuerystringParameter(String key, String value) {
-		throw new RuntimeException("Cannot add query string with key " + key + " and " + value);
+		// Workaround since some OAuth2 require "access_token" and others "oauth_token"
+		if (key.equals(OAuthConstants.ACCESS_TOKEN)) { addQuerystringParameter(OAuthConstants.TOKEN, value); }
+		// Workaround, convert URI to Uri, build on the URL to add the new query parameter and then update the HTTP Request
+		Uri updatedUri = Uri.parse(httpUriRequest.getURI().toString()).buildUpon().appendQueryParameter(key, value).build();
+		((HttpRequestBase) httpUriRequest).setURI(URI.create(updatedUri.toString()));
 	}
 
 	// Returns query strings embedded in the URL

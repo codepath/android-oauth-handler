@@ -39,8 +39,9 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
         	.build();
     }
 
-    // Get a request token and the authorize url
-    // Once fetched, fire the onReceivedRequestToken for the request token handler 
+    // Get a request token and the authorization url
+    // Once fetched, fire the onReceivedRequestToken for the request token handler
+    // Works for both OAuth1.0a and OAuth2
     public void fetchRequestToken() {
         new AsyncSimpleTask(new AsyncSimpleTask.AsyncSimpleTaskHandler() {
             String authorizeUrl = null;
@@ -49,8 +50,12 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
 
             public void doInBackground() {
                 try {
-                	requestToken = service.getRequestToken();
-                    authorizeUrl = service.getAuthorizationUrl(requestToken);
+                	if (service.getVersion() == "1.0") {
+                    	requestToken = service.getRequestToken();
+                        authorizeUrl = service.getAuthorizationUrl(requestToken);
+                	} else if (service.getVersion() == "2.0") {
+                		authorizeUrl = service.getAuthorizationUrl(null);
+                	}
                 } catch (Exception e) {
                     this.e = e;
                 }
@@ -72,10 +77,16 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
 
         new AsyncSimpleTask(new AsyncSimpleTask.AsyncSimpleTaskHandler() {
             Exception e = null;
-
+  
             public void doInBackground() {
             	Uri authorizedUri = uri;
-                String oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.VERIFIER);
+            	String oauth_verifier = null;
+            	if (authorizedUri.getQueryParameterNames().contains(OAuthConstants.VERIFIER)) {
+            		oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.VERIFIER);
+            	} else if (authorizedUri.getQueryParameterNames().contains(OAuthConstants.CODE)) {
+            		oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.CODE);
+            	}
+
                 try {
                 	accessToken = service.getAccessToken(requestToken, new Verifier(oauth_verifier));
                 } catch (Exception e) {
