@@ -40,8 +40,8 @@ public abstract class OAuthBaseClient {
             public void onReceivedRequestToken(Token requestToken, String authorizeUrl) {
             	if (requestToken != null) { // store for OAuth1.0a
             		editor.putString("request_token", requestToken.getToken());
-                	editor.putString("request_token_secret", requestToken.getSecret());
-                    editor.commit();
+            		editor.putString("request_token_secret", requestToken.getSecret());
+            		editor.commit();
             	}
             	// Launch the authorization URL in the browser
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizeUrl + "&perms=delete"));
