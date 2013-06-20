@@ -38,7 +38,7 @@ public class TwitterClient extends OAuthBaseClient {
     public static final String REST_URL = "http://api.twitter.com";
     public static final String REST_CONSUMER_KEY = "SOME_KEY_HERE";
     public static final String REST_CONSUMER_SECRET = "SOME_SECRET_HERE";
-    public static final String REST_CALLBACK_URL = "oauth://arbitraryname";
+    public static final String REST_CALLBACK_URL = "oauth://arbitraryname.com";
 
     public TwitterClient(Context context) {
         super(context, REST_API_CLASS, REST_URL,
@@ -57,6 +57,27 @@ public class TwitterClient extends OAuthBaseClient {
 ```
 
 Configure the `REST_API_CLASS`, `REST_URL`, `REST_CONSUMER_KEY`, `REST_CONSUMER_SECRET` based on the values needed to connect to your particular API. The `REST_URL` should be the base URL used for connecting to the API (i.e `https://api.twitter.com`). The `REST_API_CLASS` should be the class defining the [service](https://github.com/fernandezpablo85/scribe-java/tree/master/src/main/java/org/scribe/builder/api) you wish to connect to. Check out the [full list of services](https://github.com/fernandezpablo85/scribe-java/tree/master/src/main/java/org/scribe/builder/api) you can select (i.e `FlickrApi.class`).
+
+Make sure that the project's `AndroidManifest.xml` has the appropriate `intent-filter` tags that correspond
+with the `REST_CALLBACK_URL` defined in the client:
+
+```xml
+<activity ...>
+  <intent-filter>
+      <action android:name="android.intent.action.VIEW" />
+
+      <category android:name="android.intent.category.DEFAULT" />
+      <category android:name="android.intent.category.BROWSABLE" />
+
+      <data
+          android:scheme="oauth"
+          android:host="arbitraryname.com"
+      />
+  </intent-filter>
+</activity>
+```
+
+If the manifest does not have a matching `intent-filter` then the OAuth flow will not work.
 
 ### Creating a LoginActivity
 
