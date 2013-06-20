@@ -49,7 +49,7 @@ Configure the `REST_API_CLASS`, `REST_URL`, `REST_CONSUMER_KEY`, `REST_CONSUMER_
 
 ### Creating a LoginActivity
 
-The next step to add support for authenticating with a service is to create a `LoginActivity` to use for logging into an OAuth service:
+The next step to add support for authenticating with a service is to create a `LoginActivity` which is responsible for the task:
 
 ```java
 public class LoginActivity extends OAuthLoginActivity<FlickrClient> {
