@@ -1,6 +1,5 @@
 package com.codepath.oauth;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,16 +11,19 @@ public abstract class OAuthLoginFragment<T extends OAuthBaseClient> extends Frag
   
 	private T client;
 
+	@SuppressWarnings("unchecked")
 	@Override
-	public void onCreate(Bundle saved) {
-		super.onCreate(saved);
+	public void onActivityCreated(Bundle saved) {
+		super.onActivityCreated(saved);
 
-		Class<T> clientClass = getClientClass();
+		// Fetch the uri that was passed in (which exists if this is being returned from authorization flow)
 		Uri uri = getActivity().getIntent().getData();
+		// Fetch the client class this fragment is responsible for.
+		Class<T> clientClass = getClientClass();
 
 		try {
-			client = clientClass.getConstructor(Context.class).newInstance(getActivity());
-			client.authorize(uri, this); // fetch access token (if needed)
+			client = (T) OAuthBaseClient.getInstance(clientClass, getActivity());
+			client.authorize(uri, this); // fetch access token (if not stored)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

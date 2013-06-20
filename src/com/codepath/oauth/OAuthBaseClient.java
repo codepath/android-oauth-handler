@@ -1,5 +1,7 @@
 package com.codepath.oauth;
 
+import java.util.HashMap;
+
 import org.scribe.builder.api.Api;
 import org.scribe.model.OAuthConstants;
 import org.scribe.model.Token;
@@ -16,13 +18,17 @@ public abstract class OAuthBaseClient {
     protected SharedPreferences prefs;
     protected SharedPreferences.Editor editor;
     protected OAuthAccessHandler accessHandler;
+    protected String callbackUrl;
     
-    public static OAuthBaseClient instance;
+    protected static HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient> instances = 
+    		new HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient>(); 
     
     public static OAuthBaseClient getInstance(Class<? extends OAuthBaseClient> klass, Context context) {
+    	OAuthBaseClient instance = instances.get(klass);
     	if (instance == null) {
     		try {
 				instance = (OAuthBaseClient) klass.getConstructor(Context.class).newInstance(context);
+				instances.put(klass, instance);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -32,6 +38,7 @@ public abstract class OAuthBaseClient {
     
     public OAuthBaseClient(Context c, Class<? extends Api> apiClass, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
         this.baseUrl = consumerUrl;
+        this.callbackUrl = callbackUrl;
         client = new OAuthAsyncHttpClient(apiClass, consumerKey,
                 consumerSecret, callbackUrl, new OAuthAsyncHttpClient.OAuthTokenHandler() {
         	
@@ -85,7 +92,11 @@ public abstract class OAuthBaseClient {
     public void authorize(Uri uri, OAuthAccessHandler handler) {
         this.accessHandler = handler;
         if (checkAccessToken() == null && uri != null) {
-            client.fetchAccessToken(getRequestToken(), uri);
+    		String uriServiceCallback = uri.getScheme() + "://" +  uri.getHost();
+    		// check if the authorize callback matches this service before trying to get an access token
+    		if (uriServiceCallback.equals(callbackUrl)) { 
+              client.fetchAccessToken(getRequestToken(), uri);
+    		}
         } else if (checkAccessToken() != null) { // already have access token
             this.accessHandler.onLoginSuccess();
         }
@@ -121,15 +132,20 @@ public abstract class OAuthBaseClient {
        return this.baseUrl + "/" + path;
     }
     
-    // Removes the access tokens (for signout)
+    // Removes the access tokens (for signing out)
     public void clearAccessToken() {
     	client.setAccessToken(null);
     	editor.remove(OAuthConstants.TOKEN);
     	editor.remove(OAuthConstants.TOKEN_SECRET);
         editor.commit();
     }
+    
+    // Returns true if the client is authenticated; false otherwise.
+    public boolean isAuthenticated() {
+    	return client.getAccessToken() != null;
+    }
 
-    // Defines the handler events for the oauth flow
+    // Defines the handler events for the OAuth flow
     public static interface OAuthAccessHandler {
         public void onLoginSuccess();
         public void onLoginFailure(Exception e);

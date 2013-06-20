@@ -1,17 +1,18 @@
 package com.codepath.oauth;
 
-import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.codepath.utils.GenericsUtil;
 
+
 public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends FragmentActivity
 		implements OAuthBaseClient.OAuthAccessHandler {
 
 	private T client;
 
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle saved) {
 		super.onCreate(saved);
@@ -20,7 +21,7 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 		Uri uri = getIntent().getData();
 
 		try {
-			client = clientClass.getConstructor(Context.class).newInstance(this);
+			client = (T) OAuthBaseClient.getInstance(clientClass, this);
 			client.authorize(uri, this); // fetch access token (if needed)
 		} catch (Exception e) {
 			e.printStackTrace();

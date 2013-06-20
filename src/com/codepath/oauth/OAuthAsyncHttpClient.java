@@ -23,7 +23,8 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
  * The client is based on AsyncHttpClient for async http requests and uses Scribe to manage the OAuth authentication.
  */
 public class OAuthAsyncHttpClient extends AsyncHttpClient {
-
+   
+	private Class<? extends Api> apiClass;
     private OAuthTokenHandler handler;
     private Token accessToken;
     private OAuthService service;
@@ -31,6 +32,7 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     // Requires the ApiClass, consumerKey, consumerSecret and callbackUrl along with the TokenHandler
     public OAuthAsyncHttpClient(Class<? extends Api> apiClass, String consumerKey, String consumerSecret, String callbackUrl,
                                 OAuthTokenHandler handler) {
+    	this.apiClass = apiClass;
         this.handler = handler;
         if (callbackUrl == null) { callbackUrl = OAuthConstants.OUT_OF_BAND; };
         this.service = new ServiceBuilder()
@@ -114,11 +116,15 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     	}
     }
     
+    public Token getAccessToken() {
+    	return this.accessToken;
+    }
+    
     // Send scribe signed request based on the async http client to construct a signed request
     // Accepts an HttpEntity which has the underlying entity for the request params
     protected void sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest,
             String contentType, AsyncHttpResponseHandler responseHandler, Context context) {
-    	if (this.service != null) {
+    	if (this.service != null && accessToken != null) {
             try {
             	ScribeRequestAdapter adapter = new ScribeRequestAdapter(uriRequest);
                 this.service.signRequest(accessToken, adapter);
@@ -126,6 +132,8 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
             } catch (Exception e) {
             	e.printStackTrace();
             }
+        } else if (accessToken == null) {
+        	throw new RuntimeException("Cannot send unauthenticated requests for " + apiClass.getSimpleName() + " client. Please get an access token");
         }
     	
     }
