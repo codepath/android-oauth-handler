@@ -49,7 +49,7 @@ Configure the `REST_API_CLASS`, `REST_URL`, `REST_CONSUMER_KEY`, `REST_CONSUMER_
 
 ### Creating a LoginActivity
 
-The next step is to create a `LoginActivity` to use for logging into an OAuth service:
+The next step to add support for authenticating with a service is to create a `LoginActivity` to use for logging into an OAuth service:
 
 ```java
 public class LoginActivity extends OAuthLoginActivity<FlickrClient> {
@@ -83,8 +83,8 @@ A few notes for your `LoginActivity`:
  * The `onLoginSuccess` should launch an "authenticated" activity.
  * The activity should have a button or other view a user can press to trigger authentication.
 
-In more advanced cases where you want to authenticate multiple services on a single login, check out the related 
-[guide for using OAuthLoginFragment](https://github.com/thecodepath/android-oauth-handler/wiki/Advanced-Usage-with-OAuthLoginFragments)
+In more advanced cases where you want to authenticate **multiple services from a single activity**, check out the related
+[guide for using OAuthLoginFragment](https://github.com/thecodepath/android-oauth-handler/wiki/Advanced-Usage-with-OAuthLoginFragments).
 
 ### Using the REST Client
 
