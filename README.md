@@ -10,7 +10,7 @@ This library leverages a few key libraries underneath to power the functionality
 
 ## Installation
 
-Just download the latest [jar file](https://www.dropbox.com/s/mryygauuao58mqp/codepath-oauth-0.2.0.jar) for this library and drop the jar into your "libs" folder in your Android project.
+Just download the latest [jar file](https://www.dropbox.com/s/tk5jsp3vc6oyz6i/codepath-oauth-0.2.1.jar) for this library and drop the jar into your "libs" folder in your Android project.
 
 ## Getting Started
 
