@@ -10,7 +10,18 @@ This library leverages a few key libraries underneath to power the functionality
 
 ## Installation
 
-Just download the latest [jar file](https://www.dropbox.com/s/tk5jsp3vc6oyz6i/codepath-oauth-0.2.1.jar) for this library and drop the jar into your "libs" folder in your Android project.
+You first need to make sure to download the prerequisites for using this library:
+
+ * [scribe-codepath.jar](https://www.dropbox.com/s/m4k9sls7gozx1sb/scribe-codepath.jar)
+ * [codepath-utils.jar](https://www.dropbox.com/s/u8ixvp4lw9fh8l5/codepath-utils.jar)
+ * [android-async-http-client.jar](https://www.dropbox.com/s/fr9e3mk193q605q/android-async-http-1.4.3.jar)
+
+Next download the [codepath-oauth.jar](https://www.dropbox.com/s/tk5jsp3vc6oyz6i/codepath-oauth-0.2.1.jar) file. 
+Move all of these jars into the "libs" folder of the desired Android project.
+
+If you want an easier way to get setup with this library, try downloading the
+[android-rest-client-template](https://github.com/thecodepath/android-rest-client-template/archive/master.zip)
+instead and using that as the template for your project.
 
 ## Getting Started
 
