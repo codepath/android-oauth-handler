@@ -83,6 +83,9 @@ A few notes for your `LoginActivity`:
  * The `onLoginSuccess` should launch an "authenticated" activity.
  * The activity should have a button or other view a user can press to trigger authentication.
 
+In more advanced cases where you want to authenticate multiple services on a single login, check out the related 
+[guide for using OAuthLoginFragment](https://github.com/thecodepath/android-oauth-handler/wiki/Advanced-Usage-with-OAuthLoginFragments)
+
 ### Using the REST Client
 
 These endpoint methods will automatically execute asynchronous requests signed with the authenticated access token anywhere your application. To use JSON endpoints, simply invoke the method
