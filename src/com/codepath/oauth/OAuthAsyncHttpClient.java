@@ -5,6 +5,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HttpContext;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.Api;
+import org.scribe.exceptions.OAuthException;
 import org.scribe.model.OAuthConstants;
 import org.scribe.model.Token;
 import org.scribe.model.Verifier;
@@ -81,25 +82,32 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
             Exception e = null;
   
             public void doInBackground() {
-            	Uri authorizedUri = uri;
-            	String oauth_verifier = null;
-            	if (authorizedUri.getQueryParameterNames().contains(OAuthConstants.VERIFIER)) {
-            		oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.VERIFIER);
-            	} else if (authorizedUri.getQueryParameterNames().contains(OAuthConstants.CODE)) {
-            		oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.CODE);
-            	}
-
-                try {
-                	accessToken = service.getAccessToken(requestToken, new Verifier(oauth_verifier));
+            	// Fetch the verifier code from redirect url parameters
+        		Uri authorizedUri = uri;
+        		String oauth_verifier = null;
+        		if (authorizedUri.getQuery().contains(OAuthConstants.CODE)) {
+        			oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.CODE);
+        		} else if (authorizedUri.getQuery().contains(OAuthConstants.VERIFIER)) {
+        			oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.VERIFIER);
+        		}
+        		
+        		// Use verifier token to fetch access token
+            	try {
+                    if (oauth_verifier != null) {
+                    	accessToken = service.getAccessToken(requestToken, new Verifier(oauth_verifier));
+                    } else { // verifier was null
+                	    throw new OAuthException("No verifier code was returned with uri '" + uri + "' " +
+                	    		"and access token cannot be retrieved");
+                    }
                 } catch (Exception e) {
                     this.e = e;
                 }
             }
 
             public void onPostExecute() {
-                if (e != null)
+                if (e != null) {
                     handler.onFailure(e);
-                else  {
+                } else {
                     setAccessToken(accessToken);
                     handler.onReceivedAccessToken(accessToken);
                 }
@@ -133,7 +141,7 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
             	e.printStackTrace();
             }
         } else if (accessToken == null) {
-        	throw new RuntimeException("Cannot send unauthenticated requests for " + apiClass.getSimpleName() + " client. Please get an access token");
+        	throw new OAuthException("Cannot send unauthenticated requests for " + apiClass.getSimpleName() + " client. Please attach an access token!");
         }
     	
     }
