@@ -16,7 +16,7 @@ You first need to make sure to download the prerequisites for using this library
  * [codepath-utils.jar](https://www.dropbox.com/s/u8ixvp4lw9fh8l5/codepath-utils.jar)
  * [android-async-http-client.jar](https://www.dropbox.com/s/fr9e3mk193q605q/android-async-http-1.4.3.jar)
 
-Next download the [codepath-oauth.jar](https://www.dropbox.com/s/tk5jsp3vc6oyz6i/codepath-oauth-0.2.1.jar) file. 
+Next download the [codepath-oauth.jar](https://www.dropbox.com/s/hgeq6f1rs43tnlb/codepath-oauth-0.2.2.jar) file. 
 Move all of these jars into the "libs" folder of the desired Android project.
 
 If you want an easier way to get setup with this library, try downloading the
