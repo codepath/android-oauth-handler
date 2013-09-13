@@ -6,6 +6,7 @@ import org.apache.http.protocol.HttpContext;
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.Api;
 import org.scribe.exceptions.OAuthException;
+import org.scribe.model.OAuthBaseRequest;
 import org.scribe.model.OAuthConstants;
 import org.scribe.model.Token;
 import org.scribe.model.Verifier;
@@ -128,22 +129,26 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     	return this.accessToken;
     }
     
+    // Signs any request that complies with the OAuthBaseRequest interface
+    public void signRequest(OAuthBaseRequest request) {
+    	if (this.service != null && accessToken != null) {
+    	  try {
+    	    this.service.signRequest(accessToken, request);
+    	  } catch (Exception e) {
+            e.printStackTrace();
+          }
+    	} else if (accessToken == null) {
+        	throw new OAuthException("Cannot send unauthenticated requests for " + apiClass.getSimpleName() + " client. Please attach an access token first!");
+        }
+    }
+
     // Send scribe signed request based on the async http client to construct a signed request
     // Accepts an HttpEntity which has the underlying entity for the request params
     protected void sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest,
-            String contentType, AsyncHttpResponseHandler responseHandler, Context context) {
-    	if (this.service != null && accessToken != null) {
-            try {
-            	ScribeRequestAdapter adapter = new ScribeRequestAdapter(uriRequest);
-                this.service.signRequest(accessToken, adapter);
-            	super.sendRequest(client, httpContext, uriRequest, contentType, responseHandler, context);
-            } catch (Exception e) {
-            	e.printStackTrace();
-            }
-        } else if (accessToken == null) {
-        	throw new OAuthException("Cannot send unauthenticated requests for " + apiClass.getSimpleName() + " client. Please attach an access token!");
-        }
-    	
+        String contentType, AsyncHttpResponseHandler responseHandler, Context context) {
+        ScribeRequestAdapter adapter = new ScribeRequestAdapter(uriRequest);
+        signRequest(adapter);
+        super.sendRequest(client, httpContext, uriRequest, contentType, responseHandler, context);
     }
     
     // Defines the interface handler for different token handlers
