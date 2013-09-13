@@ -19,6 +19,7 @@ public abstract class OAuthBaseClient {
     protected SharedPreferences.Editor editor;
     protected OAuthAccessHandler accessHandler;
     protected String callbackUrl;
+    protected int requestIntentFlags = -1;
     
     protected static HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient> instances = 
     		new HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient>(); 
@@ -52,6 +53,7 @@ public abstract class OAuthBaseClient {
             	}
             	// Launch the authorization URL in the browser
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizeUrl + "&perms=delete"));
+                if (requestIntentFlags != -1) { intent.setFlags(requestIntentFlags); }
                 OAuthBaseClient.this.context.startActivity(intent);
             }
             
@@ -143,6 +145,11 @@ public abstract class OAuthBaseClient {
     // Returns true if the client is authenticated; false otherwise.
     public boolean isAuthenticated() {
     	return client.getAccessToken() != null;
+    }
+    
+    // Sets the flags used when launching browser to authenticate through OAuth
+    public void setRequestIntentFlags(int flags) {
+    	this.requestIntentFlags = flags;
     }
 
     // Defines the handler events for the OAuth flow
