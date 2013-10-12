@@ -18,11 +18,9 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 		super.onCreate(saved);
 
 		Class<T> clientClass = getClientClass();
-		Uri uri = getIntent().getData();
 
 		try {
 			client = (T) OAuthBaseClient.getInstance(clientClass, this);
-			client.authorize(uri, this); // fetch access token (if needed)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -39,14 +37,14 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 }
 
 /*
- * 1) Subclass OAuthBaseClient like TwitterClient 
- * 2) Subclass OAuthLoginActivity<TwitterClient> 
- * 3) Invoke .login 
- * 4) Optionally override 
- *   a) onLoginSuccess 
- *   b) onLoginFailure(Exception e) 
- * 5) In other activities that need the client 
- *   a) c = TwitterClient.getSharedClient() 
+ * 1) Subclass OAuthBaseClient like TwitterClient
+ * 2) Subclass OAuthLoginActivity<TwitterClient>
+ * 3) Invoke .login
+ * 4) Optionally override
+ *   a) onLoginSuccess
+ *   b) onLoginFailure(Exception e)
+ * 5) In other activities that need the client
+ *   a) c = TwitterClient.getSharedClient()
 *    b) c.getTimeline(...)
  * 6) Modify AndroidManifest.xml to add an IntentFilter w/ the callback URL
  * defined in the OAuthBaseClient.
