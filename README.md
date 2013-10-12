@@ -12,11 +12,11 @@ This library leverages a few key libraries underneath to power the functionality
 
 You first need to make sure to download the prerequisites for using this library:
 
- * [scribe-codepath.jar](https://www.dropbox.com/s/m4k9sls7gozx1sb/scribe-codepath.jar)
- * [codepath-utils.jar](https://www.dropbox.com/s/u8ixvp4lw9fh8l5/codepath-utils.jar)
- * [android-async-http-client.jar](https://www.dropbox.com/s/fr9e3mk193q605q/android-async-http-1.4.3.jar)
+ * [scribe-codepath.jar](https://www.dropbox.com/s/2ocu8cexujaustg/scribe-codepath.jar)
+ * [codepath-utils.jar](https://www.dropbox.com/s/6y5elx9dxjrcxim/codepath-utils.jar)
+ * [android-async-http-client.jar](https://www.dropbox.com/s/9ez0ts8dwuohprk/android-async-http-1.4.3.jar)
 
-Next download the [codepath-oauth.jar](https://www.dropbox.com/s/hgeq6f1rs43tnlb/codepath-oauth-0.2.2.jar) file.
+Next download the [codepath-oauth.jar](https://www.dropbox.com/s/2lyeq2by1u01jki/codepath-oauth-0.2.4.jar) file.
 Move all of these jars into the "libs" folder of the desired Android project.
 
 If you want an easier way to get setup with this library, try downloading the
@@ -120,7 +120,8 @@ A few notes for your `LoginActivity`:
  * Your activity must extend from `OAuthLoginActivity<SomeRestClient>`
  * Your activity must implement `onLoginSuccess` and `onLoginFailure`
  * The `onLoginSuccess` should launch an "authenticated" activity.
- * The activity should have a button or other view a user can press to trigger authentication via the connect() method (i.e. activity_login).
+ * The activity should have a button or other view a user can press to trigger authentication 
+   * Authentication is initiated by invoking `getClient().connect()` within the LoginActivity.
 
 In more advanced cases where you want to authenticate **multiple services from a single activity**, check out the related
 [guide for using OAuthLoginFragment](https://github.com/thecodepath/android-oauth-handler/wiki/Advanced-Usage-with-OAuthLoginFragments).
