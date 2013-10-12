@@ -18,6 +18,8 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 		super.onCreate(saved);
 
 		Class<T> clientClass = getClientClass();
+		// Extracts the authenticated url data after the user 
+		// authorizes the OAuth app in the browser 
 		Uri uri = getIntent().getData();
 
 		try {
