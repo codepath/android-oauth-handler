@@ -16,7 +16,7 @@ You first need to make sure to download the prerequisites for using this library
  * [codepath-utils.jar](https://www.dropbox.com/s/u8ixvp4lw9fh8l5/codepath-utils.jar)
  * [android-async-http-client.jar](https://www.dropbox.com/s/fr9e3mk193q605q/android-async-http-1.4.3.jar)
 
-Next download the [codepath-oauth.jar](https://www.dropbox.com/s/hgeq6f1rs43tnlb/codepath-oauth-0.2.2.jar) file. 
+Next download the [codepath-oauth.jar](https://www.dropbox.com/s/hgeq6f1rs43tnlb/codepath-oauth-0.2.2.jar) file.
 Move all of these jars into the "libs" folder of the desired Android project.
 
 If you want an easier way to get setup with this library, try downloading the
@@ -87,6 +87,13 @@ The next step to add support for authenticating with a service is to create a `L
 public class LoginActivity extends OAuthLoginActivity<FlickrClient> {
   // This fires once the user is authenticated, or fires immediately
   // if the user is already authenticated.
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_login);
+  }
+
   @Override
   public void onLoginSuccess() {
     Intent i = new Intent(this, PhotosActivity.class);
@@ -113,7 +120,7 @@ A few notes for your `LoginActivity`:
  * Your activity must extend from `OAuthLoginActivity<SomeRestClient>`
  * Your activity must implement `onLoginSuccess` and `onLoginFailure`
  * The `onLoginSuccess` should launch an "authenticated" activity.
- * The activity should have a button or other view a user can press to trigger authentication.
+ * The activity should have a button or other view a user can press to trigger authentication via the connect() method (i.e. activity_login).
 
 In more advanced cases where you want to authenticate **multiple services from a single activity**, check out the related
 [guide for using OAuthLoginFragment](https://github.com/thecodepath/android-oauth-handler/wiki/Advanced-Usage-with-OAuthLoginFragments).
