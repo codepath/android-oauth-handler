@@ -1,7 +1,7 @@
 package com.codepath.oauth;
 
+import android.content.Intent;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.codepath.utils.GenericsUtil;
@@ -11,12 +11,21 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 		implements OAuthBaseClient.OAuthAccessHandler {
 
 	private T client;
-
+	
+	// Use this to properly assign the new intent with callback code
+	// for activities with a "singleTask" launch mode
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		setIntent(intent);
+	}
+	
+	// Extract the uri data and call authorize to retrieve access token
+	// This is why after the browser redirects to the app, authentication is completed
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void onCreate(Bundle saved) {
-		super.onCreate(saved);
-
+	protected void onResume() {
+		super.onResume();
 		Class<T> clientClass = getClientClass();
 		// Extracts the authenticated url data after the user 
 		// authorizes the OAuth app in the browser 
