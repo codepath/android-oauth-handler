@@ -11,16 +11,16 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 		implements OAuthBaseClient.OAuthAccessHandler {
 
 	private T client;
+	private Uri uri;
 
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void onCreate(Bundle saved) {
-		super.onCreate(saved);
+	protected void onResume() {
+		super.onResume();
 
 		Class<T> clientClass = getClientClass();
 		// Extracts the authenticated url data after the user 
 		// authorizes the OAuth app in the browser 
-		Uri uri = getIntent().getData();
 
 		try {
 			client = (T) OAuthBaseClient.getInstance(clientClass, this);
@@ -28,6 +28,12 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		uri = intent.getData();
 	}
 
 	public T getClient() {
