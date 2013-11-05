@@ -11,7 +11,7 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 		implements OAuthBaseClient.OAuthAccessHandler {
 
 	private T client;
-    private Uri uri;
+	private Uri uri;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -30,11 +30,11 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 		}
 	}
 
-    @Override
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        uri = intent.getData();
-    }
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		uri = intent.getData();
+	}
 
 	public T getClient() {
 		return client;
