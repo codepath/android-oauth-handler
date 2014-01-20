@@ -145,4 +145,9 @@ public class ScribeRequestAdapter implements OAuthBaseRequest {
 		return params;
 	}
 
+	@Override
+	public String getRealm() {
+		return null;
+	}
+
 }

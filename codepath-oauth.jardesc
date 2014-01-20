@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="MacRoman" standalone="no"?>
 <jardesc>
-    <jar path="/Users/nesquena/Desktop/codepath-oauth-0.2.4.jar"/>
+    <jar path="/Users/nesquena/Desktop/codepath-oauth-0.3.0.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/CodePathOAuthHandler/codepath-oauth.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="false" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
     <storedRefactorings deprecationInfo="true" structuralOnly="false"/>
     <selectedProjects/>
