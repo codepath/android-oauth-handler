@@ -124,7 +124,7 @@ A few notes for your `LoginActivity`:
    * Authentication is initiated by invoking `getClient().connect()` within the LoginActivity.
 
 In more advanced cases where you want to authenticate **multiple services from a single activity**, check out the related
-[guide for using OAuthLoginFragment](https://github.com/thecodepath/android-oauth-handler/wiki/Advanced-Usage-with-OAuthLoginFragments).
+[guide for using OAuthLoginFragment](https://github.com/thecodepath/android-oauth-handler/wiki/Advanced-Use-with-OAuthLoginFragment).
 
 ### Using the REST Client
 
