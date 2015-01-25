@@ -12,11 +12,11 @@ This library leverages a few key libraries underneath to power the functionality
 
 You first need to make sure to download the prerequisites for using this library:
 
- * [scribe-codepath.jar](https://www.dropbox.com/s/2ocu8cexujaustg/scribe-codepath.jar)
- * [codepath-utils.jar](https://www.dropbox.com/s/6y5elx9dxjrcxim/codepath-utils.jar)
- * [android-async-http-client.jar](https://www.dropbox.com/s/9ez0ts8dwuohprk/android-async-http-1.4.3.jar)
+ * [scribe-codepath.jar](https://www.dropbox.com/s/f31hsdo4yduzhb1/scribe-codepath-0.0.2.jar?dl=1)
+ * [codepath-utils.jar](https://www.dropbox.com/s/6y5elx9dxjrcxim/codepath-utils.jar?dl=1)
+ * [android-async-http-client.jar](https://www.dropbox.com/s/2e9l3kqvaf7h8xe/android-async-http-1.4.6.jar?dl=1)
 
-Next download the [codepath-oauth.jar](https://www.dropbox.com/s/2lyeq2by1u01jki/codepath-oauth-0.2.4.jar) file.
+Next download the [codepath-oauth.jar](https://www.dropbox.com/s/1xslb2ae7v7cb0z/codepath-oauth-0.4.0.jar?dl=1) file.
 Move all of these jars into the "libs" folder of the desired Android project.
 
 If you want an easier way to get setup with this library, try downloading the
