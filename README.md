@@ -12,11 +12,11 @@ This library leverages a few key libraries underneath to power the functionality
 
 You first need to make sure to download the prerequisites for using this library:
 
- * [scribe-codepath.jar](https://www.dropbox.com/s/2ocu8cexujaustg/scribe-codepath.jar)
- * [codepath-utils.jar](https://www.dropbox.com/s/6y5elx9dxjrcxim/codepath-utils.jar)
- * [android-async-http-client.jar](https://www.dropbox.com/s/9ez0ts8dwuohprk/android-async-http-1.4.3.jar)
+ * [scribe-codepath.jar](https://www.dropbox.com/s/h7risvofhpejxcb/scribe-codepath-0.0.3.jar?dl=1)
+ * [codepath-utils.jar](https://www.dropbox.com/s/6y5elx9dxjrcxim/codepath-utils.jar?dl=1)
+ * [android-async-http-client.jar](https://www.dropbox.com/s/2e9l3kqvaf7h8xe/android-async-http-1.4.6.jar?dl=1)
 
-Next download the [codepath-oauth.jar](https://www.dropbox.com/s/2lyeq2by1u01jki/codepath-oauth-0.2.4.jar) file.
+Next download the [codepath-oauth.jar](https://www.dropbox.com/s/64wiil6ngzoomqx/codepath-oauth-0.4.1.jar?dl=1) file.
 Move all of these jars into the "libs" folder of the desired Android project.
 
 If you want an easier way to get setup with this library, try downloading the
@@ -135,20 +135,20 @@ with a `JsonHttpResponseHandler` handler:
 // SomeActivity.java
 RestClient client = RestClientApp.getRestClient();
 client.getHomeTimeline(1, new JsonHttpResponseHandler() {
-  public void onSuccess(JSONArray json) {
+  public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
     // Response is automatically parsed into a JSONArray
     // json.getJSONObject(0).getLong("id");
   }
 });
 ```
 
-Based on the JSON response (array or object), you need to declare the expected type inside the `onSuccess` signature i.e `public void onSuccess(JSONObject json)`. If the endpoint does not return JSON, then you can use the `AsyncHttpResponseHandler`:
+Based on the JSON response (array or object), you need to declare the expected type inside the `onSuccess` signature i.e `public void onSuccess(int statusCode, Header[] headers, JSONObject json)`. If the endpoint does not return JSON, then you can use the `AsyncHttpResponseHandler`:
 
 ```java
 RestClient client = RestClientApp.getRestClient();
 client.get("http://www.google.com", new AsyncHttpResponseHandler() {
     @Override
-    public void onSuccess(String response) {
+    public void onSuccess(int statusCode, Header[] headers, String response) {
         System.out.println(response);
     }
 });

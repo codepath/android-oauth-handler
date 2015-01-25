@@ -2,12 +2,12 @@ package com.codepath.oauth;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 
 import com.codepath.utils.GenericsUtil;
 
-//This is the FragmentActivity supportv4 version of LoginActivity
-public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends FragmentActivity
+// This is the ActionBarActivity supportv7 version of LoginActivity
+public abstract class OAuthLoginActionBarActivity<T extends OAuthBaseClient> extends ActionBarActivity
 		implements OAuthBaseClient.OAuthAccessHandler {
 
 	private T client;
@@ -45,7 +45,7 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 
 	@SuppressWarnings("unchecked")
 	private Class<T> getClientClass() {
-		return (Class<T>) GenericsUtil.getTypeArguments(OAuthLoginActivity.class, this.getClass()).get(0);
+		return (Class<T>) GenericsUtil.getTypeArguments(OAuthLoginActionBarActivity.class, this.getClass()).get(0);
 	}
 }
 
