@@ -16,7 +16,6 @@ import android.net.Uri;
 
 import com.codepath.utils.AsyncSimpleTask;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.ResponseHandlerInterface;
 
