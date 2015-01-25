@@ -17,6 +17,8 @@ import android.net.Uri;
 import com.codepath.utils.AsyncSimpleTask;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.ResponseHandlerInterface;
 
 /*
  * OAuthAsyncHttpClient is responsible for managing the request and access token exchanges and then
@@ -130,20 +132,23 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     
     // Send scribe signed request based on the async http client to construct a signed request
     // Accepts an HttpEntity which has the underlying entity for the request params
-    protected void sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest,
-            String contentType, AsyncHttpResponseHandler responseHandler, Context context) {
+    @Override
+    protected RequestHandle sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest,
+            String contentType, ResponseHandlerInterface responseHandler, Context context) {
     	if (this.service != null && accessToken != null) {
             try {
             	ScribeRequestAdapter adapter = new ScribeRequestAdapter(uriRequest);
                 this.service.signRequest(accessToken, adapter);
-            	super.sendRequest(client, httpContext, uriRequest, contentType, responseHandler, context);
+            	return super.sendRequest(client, httpContext, uriRequest, contentType, responseHandler, context);
             } catch (Exception e) {
             	e.printStackTrace();
             }
         } else if (accessToken == null) {
         	throw new OAuthException("Cannot send unauthenticated requests for " + apiClass.getSimpleName() + " client. Please attach an access token!");
+        } else { // service is null
+        	throw new OAuthException("Cannot send unauthenticated requests for undefined service. Please specify a valid api service!");
         }
-    	
+		return null; // Hopefully never reaches here
     }
     
     // Defines the interface handler for different token handlers
