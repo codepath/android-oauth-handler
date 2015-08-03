@@ -79,6 +79,31 @@ with the `REST_CALLBACK_URL` defined in the client:
 
 If the manifest does not have a matching `intent-filter` then the OAuth flow will not work.
 
+#### Customizations for Twitter
+
+The above instructions cover most OAuth integrations. When using this template to build a Twitter integration, you will need to make a few changes.
+
+In `AndroidManifest.xml`, use the OAuth scheme name `x-oauthflow-twitter`:
+
+```xml
+<activity ...>
+  <intent-filter ...>
+      <data
+          android:scheme="x-oauthflow-twitter"
+          android:host="arbitraryname.com"
+      />
+  </intent-filter>
+</activity>
+```
+
+In `TwitterClient.java`, the value for `REST_CALLBACK_URL` must also use the `x-oauthflow-twitter` protocol. 
+
+```java
+  public static final String REST_CALLBACK_URL = "x-oauthflow-twitter://arbitraryname.com";
+```
+
+Note that the `arbitraryname.com` value can be any string. If you leave the setting unchecked for callback locking in your Twitter developer settings, then you can use any placeholder value. The callback host value in `AndroidManifest.xml` must correspond to the part after the `://` in `REST_CALLBACK_URL`, but it need not match the setting in your Twitter developer settings page.
+
 ### Creating a LoginActivity
 
 The next step to add support for authenticating with a service is to create a `LoginActivity` which is responsible for the task:
