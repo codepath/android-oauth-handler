@@ -20,6 +20,8 @@ android {
 
 dependencies {
     compile 'com.android.support:support-v4:21.0.0+'
+    compile 'com.android.support:appcompat-v7:23.0.0'
+
     compile files('libs/android-async-http-1.4.3.jar')
     compile files('libs/codepath-utils.jar')
     compile files('libs/scribe-codepath.jar')
