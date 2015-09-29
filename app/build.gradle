@@ -19,8 +19,9 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.0+'
     compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'oauth.signpost:signpost-core:1.2.1.2'
 
     compile files('libs/android-async-http-1.4.3.jar')
     compile files('libs/codepath-utils.jar')
