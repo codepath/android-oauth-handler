@@ -79,6 +79,7 @@ public class OAuthOkHttpClient extends OkHttpClient {
     // Once receiving the access token, fires the onReceivedAccessToken method on the handler
     public void fetchAccessToken(final Token requestToken, final Uri uri) {
 
+        consumer.setTokenWithSecret(requestToken.getToken(), requestToken.getTokenSecret());
         new AsyncSimpleTask(new AsyncSimpleTask.AsyncSimpleTaskHandler() {
             Exception e = null;
   
