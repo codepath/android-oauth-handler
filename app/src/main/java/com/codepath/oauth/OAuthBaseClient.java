@@ -9,6 +9,7 @@ import java.util.HashMap;
 
 import oauth.signpost.OAuth;
 import oauth.signpost.OAuthProvider;
+import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer;
 
 public abstract class OAuthBaseClient {
     protected String baseUrl;
@@ -35,14 +36,13 @@ public abstract class OAuthBaseClient {
     	}
     	return instance;
     }
-    
-    public OAuthBaseClient(OAuthProvider oauthProvider, Context c, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
-        this.baseUrl = consumerUrl;
+
+    public OAuthBaseClient(OkHttpOAuthConsumer oAuthConsumer, OAuthProvider oAuthProvider, Context c, String callbackUrl) {
         this.callbackUrl = callbackUrl;
-        client = new OAuthOkHttpClient(consumerKey,
-                consumerSecret, callbackUrl, oauthProvider, new OAuthOkHttpClient.OAuthTokenHandler() {
+
+        client = new OAuthOkHttpClient(oAuthConsumer, oAuthProvider, callbackUrl, new OAuthOkHttpClient.OAuthTokenHandler() {
         	
-        	// Store request token and launch the authorization URL in the browser
+            // Store request token and launch the authorization URL in the browser
             @Override
             public void onReceivedRequestToken(Token requestToken, String authorizeUrl) {
             	if (requestToken != null) { // store for OAuth1.0a
@@ -74,7 +74,7 @@ public abstract class OAuthBaseClient {
 
         this.context = c;
         // Store preferences namespaced by the class and consumer key used
-        this.prefs = this.context.getSharedPreferences("OAuth_" + oauthProvider.getClass().toString() + "_" + consumerKey, 0);
+        this.prefs = this.context.getSharedPreferences("OAuth_" + oAuthProvider.getClass().toString() + "_" + oAuthConsumer.getConsumerKey(), 0);
         this.editor = this.prefs.edit();
     }
 
