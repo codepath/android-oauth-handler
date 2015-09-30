@@ -26,9 +26,10 @@ public class OAuthOkHttpClient extends OkHttpClient {
     public static final String CODE = "code";
 
     // Requires the ApiClass, consumerKey, consumerSecret and callbackUrl along with the TokenHandler
-    public OAuthOkHttpClient(String consumerKey,
-            String consumerSecret, String callbackUrl,
+    public OAuthOkHttpClient(
+            OkHttpOAuthConsumer oAuthConsumer,
             OAuthProvider oAuthProvider,
+            String callbackUrl,
             OAuthTokenHandler handler) {
         this.handler = handler;
         if (callbackUrl == null) {
@@ -37,7 +38,7 @@ public class OAuthOkHttpClient extends OkHttpClient {
             this.callbackUrl = callbackUrl;
         }
 
-        consumer = new OkHttpOAuthConsumer(consumerKey, consumerSecret);
+        consumer = oAuthConsumer;
         this.interceptors().add(new SigningInterceptor(consumer));
         provider = oAuthProvider;
     }
