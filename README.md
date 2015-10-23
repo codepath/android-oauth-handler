@@ -195,7 +195,10 @@ However, specifying [intent flags](http://guides.codepath.com/android/Navigation
 
 ```java
 RestClient client = RestApplication.getRestClient();
+// Specify the intent flags as desired
 client.setRequestIntentFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+// Trigger authorization
+client.connect();
 ```
 
 This can be helpful in cases where you must add a flag such as when encountering the `android.util.AndroidRuntimeException: Calling startActivity() from outside of an Activity  context requires the FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?` error.
