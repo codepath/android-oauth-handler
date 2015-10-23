@@ -180,3 +180,33 @@ client.get("http://www.google.com", new AsyncHttpResponseHandler() {
 ```
 
 Check out [Android Async HTTP Docs](http://loopj.com/android-async-http/) for more request creation details.
+
+## Extra Functionality
+
+### Access Authorization
+
+Once the request token has been received, an access token is granted by redirecting to the device's browser to allow the user to grant permission on the API provider's web address. The browser is opened using an implicit intent with no intent flags specified:
+
+```java
+Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizeUrl));
+```
+
+However, specifying [intent flags](http://guides.codepath.com/android/Navigation-and-Task-Stacks#configuring-intent-flags) to alter that behavior can be added to the message using the following:
+
+```java
+RestClient client = RestApplication.getRestClient();
+client.setRequestIntentFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+```
+
+This can be helpful in cases where you must add a flag such as when encountering the `android.util.AndroidRuntimeException: Calling startActivity() from outside of an Activity  context requires the FLAG_ACTIVITY_NEW_TASK flag. Is this really what you want?` error.
+
+### Logging Out
+
+You can log out by clearing the access token at any time through the client object:
+
+You can log out by clearing the access token at any time through the client object:
+
+```java
+RestClient client = RestApplication.getRestClient();
+client.clearAccessToken();
+```
