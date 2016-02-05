@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 21
-    buildToolsVersion "21.1.2"
+    compileSdkVersion 23
+    buildToolsVersion "23.0.0"
 
     defaultConfig {
         applicationId "com.codepath.libraries.oauthhandler"
-        minSdkVersion 4
+        minSdkVersion 7
         targetSdkVersion 19
     }
 
@@ -19,7 +19,11 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:support-v4:21.0.0+'
+    compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.squareup.okhttp:okhttp:2.5.0'
+    compile 'oauth.signpost:signpost-core:1.2.1.2'
+    compile 'se.akerfeldt:okhttp-signpost:1.0.0'
+
     compile files('libs/android-async-http-1.4.3.jar')
     compile files('libs/codepath-utils.jar')
     compile files('libs/scribe-codepath.jar')

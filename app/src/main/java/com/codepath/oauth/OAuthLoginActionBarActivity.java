@@ -1,13 +1,14 @@
 package com.codepath.oauth;
 
-import android.content.Intent;
-import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
-
 import com.codepath.utils.GenericsUtil;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.support.v7.app.AppCompatActivity;
+
 // This is the ActionBarActivity supportv7 version of LoginActivity
-public abstract class OAuthLoginActionBarActivity<T extends OAuthBaseClient> extends ActionBarActivity
+public abstract class OAuthLoginActionBarActivity<T extends OAuthBaseClient> extends
+	AppCompatActivity
 		implements OAuthBaseClient.OAuthAccessHandler {
 
 	private T client;
