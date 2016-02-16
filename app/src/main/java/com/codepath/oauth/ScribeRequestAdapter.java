@@ -1,5 +1,12 @@
 package com.codepath.oauth;
 
+import org.scribe.model.OAuthBaseRequest;
+import org.scribe.model.OAuthConstants;
+import org.scribe.model.ParameterList;
+import org.scribe.model.Verb;
+
+import android.net.Uri;
+
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;
@@ -8,28 +15,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.client.utils.URLEncodedUtils;
-import org.scribe.model.OAuthBaseRequest;
-import org.scribe.model.OAuthConstants;
-import org.scribe.model.ParameterList;
-import org.scribe.model.Verb;
-
-import android.net.Uri;
+import cz.msebera.android.httpclient.NameValuePair;
+import cz.msebera.android.httpclient.client.methods.HttpEntityEnclosingRequestBase;
+import cz.msebera.android.httpclient.client.methods.HttpRequestBase;
+import cz.msebera.android.httpclient.client.methods.HttpUriRequest;
+import cz.msebera.android.httpclient.client.utils.URLEncodedUtils;
 
 /* 
  * Implements the scribe-java Request interface allowing 
  * AsyncHttpClient requests to be signed with Scribe.
  */
 public class ScribeRequestAdapter implements OAuthBaseRequest {
-	private HttpUriRequest httpUriRequest;
+	private cz.msebera.android.httpclient.client.methods.HttpUriRequest httpUriRequest;
 	private HashMap<String, String> oauthParameters;
 	
-	public ScribeRequestAdapter(HttpUriRequest httpUriRequest) {
+	public ScribeRequestAdapter(
+			cz.msebera.android.httpclient.client.methods.HttpUriRequest httpUriRequest) {
 		this.httpUriRequest = httpUriRequest;
 		this.oauthParameters = new HashMap<String, String>();
 	}
@@ -112,8 +113,8 @@ public class ScribeRequestAdapter implements OAuthBaseRequest {
     
     // Parses and returns the entity provided as a ParameterList
 	private ParameterList parseEntityParams() {	
-		HttpEntity entity = null;
-		List<NameValuePair> parameters = null;
+		cz.msebera.android.httpclient.HttpEntity entity = null;
+		List<cz.msebera.android.httpclient.NameValuePair> parameters = null;
 		try{
 			entity = ((HttpEntityEnclosingRequestBase) httpUriRequest).getEntity();
 			parameters = new ArrayList<NameValuePair>( URLEncodedUtils.parse(entity));

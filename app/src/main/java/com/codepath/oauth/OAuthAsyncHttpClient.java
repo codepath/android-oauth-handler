@@ -1,8 +1,10 @@
 package com.codepath.oauth;
 
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.HttpContext;
+import com.codepath.utils.AsyncSimpleTask;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestHandle;
+import com.loopj.android.http.ResponseHandlerInterface;
+
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.builder.api.Api;
 import org.scribe.exceptions.OAuthException;
@@ -13,11 +15,6 @@ import org.scribe.oauth.OAuthService;
 
 import android.content.Context;
 import android.net.Uri;
-
-import com.codepath.utils.AsyncSimpleTask;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.RequestHandle;
-import com.loopj.android.http.ResponseHandlerInterface;
 
 /*
  * OAuthAsyncHttpClient is responsible for managing the request and access token exchanges and then
@@ -131,10 +128,16 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     
     // Send scribe signed request based on the async http client to construct a signed request
     // Accepts an HttpEntity which has the underlying entity for the request params
+
     @Override
-    protected RequestHandle sendRequest(DefaultHttpClient client, HttpContext httpContext, HttpUriRequest uriRequest,
-            String contentType, ResponseHandlerInterface responseHandler, Context context) {
-    	if (this.service != null && accessToken != null) {
+    protected RequestHandle sendRequest(
+            cz.msebera.android.httpclient.impl.client.DefaultHttpClient client,
+            cz.msebera.android.httpclient.protocol.HttpContext httpContext,
+            cz.msebera.android.httpclient.client.methods.HttpUriRequest uriRequest,
+            String contentType, ResponseHandlerInterface responseHandler,
+            Context context) {
+
+        if (this.service != null && accessToken != null) {
             try {
             	ScribeRequestAdapter adapter = new ScribeRequestAdapter(uriRequest);
                 this.service.signRequest(accessToken, adapter);
