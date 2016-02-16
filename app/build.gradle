@@ -1,11 +1,12 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.codepath.libraries.oauthhandler"
+        versionCode 1
+        versionName "1.0"
         minSdkVersion 7
         targetSdkVersion 23
     }
