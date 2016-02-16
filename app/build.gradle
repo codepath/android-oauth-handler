@@ -1,4 +1,34 @@
 apply plugin: 'com.android.library'
+apply plugin: 'com.github.dcendents.android-maven'
+apply plugin: 'com.jfrog.bintray'
+
+// https://github.com/bintray/gradle-bintray-plugin/issues/74#issuecomment-168367341
+// https://github.com/dcendents/android-maven-gradle-plugin/issues/9
+ext {
+
+    GROUP = 'com.codepath.libraries'
+    VERSION_NAME = "1.0.0"
+    POM_PACKAGING = "pom"
+    POM_DESCRIPTION = "CodePath OAuth Handler"
+
+    POM_ARTIFACT_ID="android-oauth-handler"
+    POM_NAME = "CodePath OAuth Handler"
+    POM_URL = "https://github.com/codepath/android-oauth-handler/"
+    POM_SCM_URL = "https://github.com/codepath/android-oauth-handler/"
+    POM_SCM_CONNECTION = "scm:git:https://github.com/codepath/android-oauth-handler.git"
+    POM_SCM_DEV_CONNECTION = "scm:git:git@github.com:codepath/android-oauth-handler.git"
+
+    POM_LICENCE_NAME = "The Apache Software License, Version 2.0"
+    POM_LICENCE_URL = "http://www.apache.org/licenses/LICENSE-2.0.txt"
+    POM_LICENCE_DIST = "repo"
+
+    POM_DEVELOPER_ID = "codepath"
+    POM_DEVELOPER_NAME = "CodePath, Inc."
+}
+
+version = VERSION_NAME
+group = GROUP
+archivesBaseName = POM_ARTIFACT_ID
 
 android {
     compileSdkVersion 23
@@ -6,7 +36,7 @@ android {
 
     defaultConfig {
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         minSdkVersion 7
         targetSdkVersion 23
     }
@@ -19,6 +49,61 @@ android {
     }
 }
 
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            name POM_NAME
+            description POM_DESCRIPTION
+            url POM_URL
+            inceptionYear '2016'
+
+            packaging 'aar'
+            group GROUP
+            artifactId POM_ARTIFACT_ID
+            version VERSION_NAME
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection POM_SCM_URL
+                url POM_SCM_CONNECTION
+
+            }
+            developers {
+                developer {
+                    name 'CodePath, Inc.'
+                }
+            }
+        }
+    }
+}
+
+bintray {
+    user = System.getenv('BINTRAY_USER')
+    key = System.getenv('BINTRAY_API_KEY')
+    configurations = ['archives']  // needs apply plugin 'com.jfrog.bintray' to work
+
+    pkg {
+        repo = 'maven'
+        name = 'android-oauth-handler'
+//        userOrg = 'codepath'
+        licenses = ['Apache-2.0']
+        vcsUrl = 'https://github.com/codepath/android-oauth-handler.git'
+        version {
+            name = '1.0'
+            desc = 'CodePath OAuth Handler'
+            released = new Date()
+            vcsTag = '1.0.0'
+        }
+    }
+
+}
+
 dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile 'com.android.support:support-v4:23.1.1'
@@ -26,3 +111,7 @@ dependencies {
     compile files('libs/codepath-utils.jar')
     compile files('libs/scribe-codepath-0.0.3.jar')
 }
+
+/*task jar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+}*/

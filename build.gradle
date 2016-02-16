@@ -5,7 +5,17 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:1.5.0'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.3'
     }
+}
+
+plugins {
+    id "com.jfrog.bintray" version "1.6"
+}
+
+bintray {
+    publications = []
+    configurations = []
 }
 
 allprojects {
@@ -13,3 +23,13 @@ allprojects {
         jcenter()
     }
 }
+/*
+allprojects { thisproject ->
+    bintray {
+        if (thisproject == rootProject) {
+            configurations = []
+        } else {
+            configurations = ['archives']
+        }
+    }
+}*/
