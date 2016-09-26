@@ -7,7 +7,8 @@ apply plugin: 'com.jfrog.bintray'
 ext {
 
     GROUP = 'com.codepath.libraries'
-    VERSION_NAME = "1.0.0"
+    BASE_VERSION = "1.1"
+    VERSION_NAME = "1.1.0"
     POM_PACKAGING = "aar"
     POM_DESCRIPTION = "CodePath OAuth Handler"
 
@@ -36,7 +37,7 @@ android {
 
     defaultConfig {
         versionCode 1
-        versionName "1.0.0"
+        versionName VERSION_NAME
         minSdkVersion 9
         targetSdkVersion 24
     }
@@ -95,10 +96,10 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/codepath/android-oauth-handler.git'
         version {
-            name = '1.0'
-            desc = 'CodePath OAuth Handler'
+            name = BASE_VERSION
+            desc = POM_NAME
             released = new Date()
-            vcsTag = '1.0.0'
+            vcsTag = VERSION_NAME
         }
     }
 
