@@ -7,8 +7,9 @@ apply plugin: 'com.jfrog.bintray'
 ext {
 
     GROUP = 'com.codepath.libraries'
-    VERSION_NAME = "1.0.0"
-    POM_PACKAGING = "pom"
+    BASE_VERSION = "1.1"
+    VERSION_NAME = "1.1.0"
+    POM_PACKAGING = "aar"
     POM_DESCRIPTION = "CodePath OAuth Handler"
 
     POM_ARTIFACT_ID="android-oauth-handler"
@@ -31,14 +32,14 @@ group = GROUP
 archivesBaseName = POM_ARTIFACT_ID
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 24
+    buildToolsVersion "24.0.0"
 
     defaultConfig {
         versionCode 1
-        versionName "1.0.0"
-        minSdkVersion 7
-        targetSdkVersion 23
+        versionName VERSION_NAME
+        minSdkVersion 9
+        targetSdkVersion 24
     }
 
     buildTypes {
@@ -95,18 +96,18 @@ bintray {
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/codepath/android-oauth-handler.git'
         version {
-            name = '1.0'
-            desc = 'CodePath OAuth Handler'
+            name = BASE_VERSION
+            desc = POM_NAME
             released = new Date()
-            vcsTag = '1.0.0'
+            vcsTag = VERSION_NAME
         }
     }
 
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:23.1.1'
-    compile 'com.android.support:support-v4:23.1.1'
+    compile 'com.android.support:appcompat-v7:24.2.0'
+    compile 'com.android.support:support-v4:24.2.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile files('libs/codepath-utils.jar')
     compile files('libs/scribe-codepath-0.0.3.jar')
