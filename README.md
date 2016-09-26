@@ -10,7 +10,7 @@ This library leverages a few key libraries underneath to power the functionality
 
 ## Installation
 
-Inside your project's root `build.gradle`, make sure jCenter() is added:
+Inside your project's root `build.gradle`, make sure the jCenter repository is added:
 
 ```gradle
 allprojects {
