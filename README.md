@@ -10,14 +10,22 @@ This library leverages a few key libraries underneath to power the functionality
 
 ## Installation
 
-You first need to make sure to download the prerequisites for using this library:
+Inside your project's root `build.gradle`, make sure jCenter() is added:
 
- * [scribe-codepath.jar](https://www.dropbox.com/s/h7risvofhpejxcb/scribe-codepath-0.0.3.jar?dl=1)
- * [codepath-utils.jar](https://www.dropbox.com/s/6y5elx9dxjrcxim/codepath-utils.jar?dl=1)
- * [android-async-http-client.jar](https://www.dropbox.com/s/2e9l3kqvaf7h8xe/android-async-http-1.4.6.jar?dl=1)
+```gradle
+allprojects {
+    repositories {
+        jcenter()
+    }
+}
+```
 
-Next download the [codepath-oauth.jar](https://www.dropbox.com/s/64wiil6ngzoomqx/codepath-oauth-0.4.1.jar?dl=1) file.
-Move all of these jars into the "libs" folder of the desired Android project.
+Next, add this line to your `app/build.gradle` file:
+
+```gradle
+dependencies {
+    compile 'com.codepath.libraries:android-oauth-handler:1.1.0'
+```
 
 If you want an easier way to get setup with this library, try downloading the
 [android-rest-client-template](https://github.com/thecodepath/android-rest-client-template/archive/master.zip)
