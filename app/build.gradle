@@ -12,7 +12,7 @@ ext {
     POM_PACKAGING = "aar"
     POM_DESCRIPTION = "CodePath OAuth Handler"
 
-    POM_ARTIFACT_ID="android-oauth-handler"
+    POM_ARTIFACT_ID = "android-oauth-handler"
     POM_NAME = "CodePath OAuth Handler"
     POM_URL = "https://github.com/codepath/android-oauth-handler/"
     POM_SCM_URL = "https://github.com/codepath/android-oauth-handler/"
@@ -40,6 +40,12 @@ android {
         versionName VERSION_NAME
         minSdkVersion 9
         targetSdkVersion 24
+    }
+
+    // Related to https://github.com/scribejava/scribejava/issues/480
+    // Scribe expects Java 7 or this custom Apache library
+    lintOptions {
+        lintConfig rootProject.file('gradle/lint.xml')
     }
 
     buildTypes {
