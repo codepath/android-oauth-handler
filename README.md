@@ -1,4 +1,4 @@
-# CodePath OAuth Handler ![Travis](https://travis-ci.org/codepath/android-oauth-handler.svg "Travis")
+# CodePath OAuth Handler [![Build Status](https://travis-ci.org/codepath/android-oauth-handler.svg?branch=master)](https://travis-ci.org/codepath/android-oauth-handler)
 
 This library is an Android library for managing OAuth requests with an extremely easy
 approach that keeps the details of the OAuth process abstracted from the end-user developer.
