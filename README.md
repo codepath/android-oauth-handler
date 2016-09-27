@@ -25,6 +25,7 @@ Next, add this line to your `app/build.gradle` file:
 ```gradle
 dependencies {
     compile 'com.codepath.libraries:android-oauth-handler:1.1.0'
+}
 ```
 
 If you want an easier way to get setup with this library, try downloading the
