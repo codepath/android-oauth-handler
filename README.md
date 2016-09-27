@@ -44,7 +44,7 @@ within your application. A REST Client is defined in the structure below:
 ```java
 public class TwitterClient extends OAuthBaseClient {
     public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class;
-    public static final String REST_URL = "http://api.twitter.com";
+    public static final String REST_URL = "https://api.twitter.com/1.1";
     public static final String REST_CONSUMER_KEY = "SOME_KEY_HERE";
     public static final String REST_CONSUMER_SECRET = "SOME_SECRET_HERE";
     public static final String REST_CALLBACK_URL = "oauth://arbitraryname.com";
