@@ -112,8 +112,8 @@ bintray {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.2.1'
-    compile 'com.android.support:support-v4:25.2.1'
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.android.support:support-v4:25.2.0'
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile files('libs/codepath-utils.jar')
     compile files('libs/scribe-codepath-0.0.3.jar')
