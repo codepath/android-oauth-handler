@@ -1,15 +1,17 @@
 package com.codepath.oauth;
 
-import java.util.HashMap;
-
-import org.scribe.builder.api.Api;
-import org.scribe.model.OAuthConstants;
-import org.scribe.model.Token;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+
+import com.github.scribejava.core.builder.api.BaseApi;
+import com.github.scribejava.core.model.OAuth1AccessToken;
+import com.github.scribejava.core.model.OAuth1RequestToken;
+import com.github.scribejava.core.model.OAuthConstants;
+import com.github.scribejava.core.model.Token;
+
+import java.util.HashMap;
 
 public abstract class OAuthBaseClient {
     protected String baseUrl;
@@ -37,18 +39,19 @@ public abstract class OAuthBaseClient {
     	return instance;
     }
     
-    public OAuthBaseClient(Context c, Class<? extends Api> apiClass, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
+    public OAuthBaseClient(Context c, Class<? extends BaseApi> apiClass, BaseApi apiInstance, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
         this.baseUrl = consumerUrl;
         this.callbackUrl = callbackUrl;
-        client = new OAuthAsyncHttpClient(apiClass, consumerKey,
+        client = new OAuthAsyncHttpClient(apiClass, apiInstance, consumerKey,
                 consumerSecret, callbackUrl, new OAuthAsyncHttpClient.OAuthTokenHandler() {
         	
         	// Store request token and launch the authorization URL in the browser
             @Override
             public void onReceivedRequestToken(Token requestToken, String authorizeUrl) {
             	if (requestToken != null) { // store for OAuth1.0a
-            		editor.putString("request_token", requestToken.getToken());
-            		editor.putString("request_token_secret", requestToken.getSecret());
+                    OAuth1RequestToken oAuth1RequestToken = (OAuth1RequestToken) requestToken;
+            		editor.putString("request_token", oAuth1RequestToken.getToken());
+            		editor.putString("request_token_secret", oAuth1RequestToken.getTokenSecret());
             		editor.commit();
             	}
             	// Launch the authorization URL in the browser
@@ -60,9 +63,11 @@ public abstract class OAuthBaseClient {
             // Store the access token in preferences, set the token in the client and fire the success callback
             @Override
             public void onReceivedAccessToken(Token accessToken) {
+                OAuth1AccessToken oAuth1AccessToken = (OAuth1AccessToken) accessToken;
+
                 client.setAccessToken(accessToken);
-                editor.putString(OAuthConstants.TOKEN, accessToken.getToken());
-                editor.putString(OAuthConstants.TOKEN_SECRET, accessToken.getSecret());
+                editor.putString(OAuthConstants.TOKEN, oAuth1AccessToken.getToken());
+                editor.putString(OAuthConstants.TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
                 editor.commit();
                 accessHandler.onLoginSuccess();
             }
@@ -105,9 +110,9 @@ public abstract class OAuthBaseClient {
     }
 
     // Return access token if the token exists in preferences
-    public Token checkAccessToken() {
+    public OAuth1RequestToken checkAccessToken() {
         if (prefs.contains(OAuthConstants.TOKEN) && prefs.contains(OAuthConstants.TOKEN_SECRET)) {
-            return new Token(prefs.getString(OAuthConstants.TOKEN, ""),
+            return new OAuth1RequestToken(prefs.getString(OAuthConstants.TOKEN, ""),
                     prefs.getString(OAuthConstants.TOKEN_SECRET, ""));
         } else {
             return null;
@@ -119,8 +124,8 @@ public abstract class OAuthBaseClient {
     }
     
     // Returns the request token stored during the request token phase
-    protected Token getRequestToken() {
-    	return new Token(prefs.getString("request_token", ""),
+    protected OAuth1RequestToken getRequestToken() {
+    	return new OAuth1RequestToken(prefs.getString("request_token", ""),
                 prefs.getString("request_token_secret", ""));
     }
 

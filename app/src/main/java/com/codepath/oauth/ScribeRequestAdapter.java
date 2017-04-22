@@ -1,11 +1,11 @@
 package com.codepath.oauth;
 
-import org.scribe.model.OAuthBaseRequest;
-import org.scribe.model.OAuthConstants;
-import org.scribe.model.ParameterList;
-import org.scribe.model.Verb;
-
 import android.net.Uri;
+
+import com.github.scribejava.core.model.OAuthConstants;
+import com.github.scribejava.core.model.OAuthRequest;
+import com.github.scribejava.core.model.ParameterList;
+import com.github.scribejava.core.model.Verb;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -25,16 +25,36 @@ import cz.msebera.android.httpclient.client.utils.URLEncodedUtils;
  * Implements the scribe-java Request interface allowing 
  * AsyncHttpClient requests to be signed with Scribe.
  */
-public class ScribeRequestAdapter implements OAuthBaseRequest {
+public class ScribeRequestAdapter extends OAuthRequest {
 	private cz.msebera.android.httpclient.client.methods.HttpUriRequest httpUriRequest;
 	private HashMap<String, String> oauthParameters;
-	
+
 	public ScribeRequestAdapter(
 			cz.msebera.android.httpclient.client.methods.HttpUriRequest httpUriRequest) {
+
+		super(getMethod(httpUriRequest.getMethod()), httpUriRequest.getURI().toString());
+
 		this.httpUriRequest = httpUriRequest;
 		this.oauthParameters = new HashMap<String, String>();
 	}
-	
+
+	public static Verb getMethod(String method) {
+		switch (method) {
+			case "GET":
+				return Verb.GET;
+			case "POST":
+				return Verb.POST;
+			case "DELETE":
+				return Verb.DELETE;
+			case "PUT":
+				return Verb.PUT;
+			case "PATCH":
+				return Verb.PATCH;
+			case "OPTIONS":
+				return Verb.OPTIONS;
+		}
+		throw new IllegalStateException(method);
+	}
 	// Adds OAuth parameter with associated value
 	@Override
 	public void addOAuthParameter(String key, String value) {
