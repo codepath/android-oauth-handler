@@ -1,20 +1,21 @@
 package com.codepath.oauth;
 
+import android.content.Context;
+import android.net.Uri;
+
 import com.codepath.utils.AsyncSimpleTask;
+import com.github.scribejava.core.builder.ServiceBuilder;
+import com.github.scribejava.core.builder.api.BaseApi;
+import com.github.scribejava.core.exceptions.OAuthException;
+import com.github.scribejava.core.model.OAuth1RequestToken;
+import com.github.scribejava.core.model.OAuthConstants;
+import com.github.scribejava.core.model.Token;
+import com.github.scribejava.core.oauth.OAuth10aService;
+import com.github.scribejava.core.oauth.OAuth20Service;
+import com.github.scribejava.core.oauth.OAuthService;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.RequestHandle;
 import com.loopj.android.http.ResponseHandlerInterface;
-
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.builder.api.Api;
-import org.scribe.exceptions.OAuthException;
-import org.scribe.model.OAuthConstants;
-import org.scribe.model.Token;
-import org.scribe.model.Verifier;
-import org.scribe.oauth.OAuthService;
-
-import android.content.Context;
-import android.net.Uri;
 
 /*
  * OAuthAsyncHttpClient is responsible for managing the request and access token exchanges and then
@@ -23,21 +24,22 @@ import android.net.Uri;
  */
 public class OAuthAsyncHttpClient extends AsyncHttpClient {
    
-	private Class<? extends Api> apiClass;
+	private Class<? extends BaseApi> apiClass;
     private OAuthTokenHandler handler;
     private Token accessToken;
     private OAuthService service;
 
-    // Requires the ApiClass, consumerKey, consumerSecret and callbackUrl along with the TokenHandler
-    public OAuthAsyncHttpClient(Class<? extends Api> apiClass, String consumerKey, String consumerSecret, String callbackUrl,
+    // Requires the apiClass, consumerKey, consumerSecret and callbackUrl along with the TokenHandler
+    public OAuthAsyncHttpClient(Class<? extends BaseApi> apiClass,
+                                BaseApi apiInstance, String consumerKey, String consumerSecret, String callbackUrl,
                                 OAuthTokenHandler handler) {
     	this.apiClass = apiClass;
         this.handler = handler;
         if (callbackUrl == null) { callbackUrl = OAuthConstants.OUT_OF_BAND; };
         this.service = new ServiceBuilder()
-        	.provider(apiClass).apiKey(consumerKey)
+        	.apiKey(consumerKey)
         	.apiSecret(consumerSecret).callback(callbackUrl)
-        	.build();
+        	.build(apiInstance);
     }
 
     // Get a request token and the authorization url
@@ -52,10 +54,12 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
             public void doInBackground() {
                 try {
                 	if (service.getVersion() == "1.0") {
-                    	requestToken = service.getRequestToken();
-                        authorizeUrl = service.getAuthorizationUrl(requestToken);
+                        OAuth10aService oAuth10aService = (OAuth10aService) service;
+                    	requestToken = oAuth10aService.getRequestToken();
+                        authorizeUrl = oAuth10aService.getAuthorizationUrl((OAuth1RequestToken) requestToken);
                 	} else if (service.getVersion() == "2.0") {
-                		authorizeUrl = service.getAuthorizationUrl(null);
+                        OAuth20Service oAuth20Service = (OAuth20Service) service;
+                        authorizeUrl = oAuth20Service.getAuthorizationUrl(null);
                 	}
                 } catch (Exception e) {
                     this.e = e;
@@ -92,7 +96,13 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
         		// Use verifier token to fetch access token
             	try {
                     if (oauth_verifier != null) {
-                    	accessToken = service.getAccessToken(requestToken, new Verifier(oauth_verifier));
+                        if (service.getVersion() == "1.0") {
+                            OAuth1RequestToken oAuth1RequestToken = (OAuth1RequestToken) requestToken;
+                            OAuth10aService oAuth10aService = (OAuth10aService) service;
+                            accessToken = oAuth10aService.getAccessToken(oAuth1RequestToken, oauth_verifier);
+                        } else if (service.getVersion() == "2.0") {
+                            throw new IllegalStateException("OAuth2 doesn't have oauth_verifier");
+                        }
                     } else { // verifier was null
                 	    throw new OAuthException("No verifier code was returned with uri '" + uri + "' " +
                 	    		"and access token cannot be retrieved");
