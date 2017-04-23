@@ -47,7 +47,6 @@ android {
     lintOptions {
         lintConfig rootProject.file('gradle/lint.xml')
     }
-
     buildTypes {
         release {
             minifyEnabled false
@@ -111,9 +110,13 @@ bintray {
 
 }
 
+ext {
+  supportVersion = '25.3.1'
+}
+
 dependencies {
-    compile 'com.android.support:appcompat-v7:25.3.0'
-    compile 'com.android.support:support-v4:25.3.0'
+    compile "com.android.support:appcompat-v7:${supportVersion}"
+    compile "com.android.support:support-v4:${supportVersion}"
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile files('libs/codepath-utils.jar')
     compile 'com.github.scribejava:scribejava-apis:4.1.0'
