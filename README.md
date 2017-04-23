@@ -43,14 +43,14 @@ within your application. A REST Client is defined in the structure below:
 
 ```java
 public class TwitterClient extends OAuthBaseClient {
-    public static final Class<? extends Api> REST_API_CLASS = TwitterApi.class;
+    public static final BaseApi REST_API_INSTANCE = TwitterApi.instance();
     public static final String REST_URL = "https://api.twitter.com/1.1";
     public static final String REST_CONSUMER_KEY = "SOME_KEY_HERE";
     public static final String REST_CONSUMER_SECRET = "SOME_SECRET_HERE";
     public static final String REST_CALLBACK_URL = "oauth://arbitraryname.com";
 
     public TwitterClient(Context context) {
-        super(context, REST_API_CLASS, REST_URL,
+        super(context, REST_API_INSTANCE, REST_URL,
           REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
     }
 
@@ -105,7 +105,7 @@ In `AndroidManifest.xml`, use the OAuth scheme name `x-oauthflow-twitter`:
 </activity>
 ```
 
-In `TwitterClient.java`, the value for `REST_CALLBACK_URL` must also use the `x-oauthflow-twitter` protocol. 
+In `TwitterClient.java`, the value for `REST_CALLBACK_URL` must also use the `x-oauthflow-twitter` protocol.
 
 ```java
   public static final String REST_CALLBACK_URL = "x-oauthflow-twitter://arbitraryname.com";
@@ -154,7 +154,7 @@ A few notes for your `LoginActivity`:
  * Your activity must extend from `OAuthLoginActivity<SomeRestClient>`
  * Your activity must implement `onLoginSuccess` and `onLoginFailure`
  * The `onLoginSuccess` should launch an "authenticated" activity.
- * The activity should have a button or other view a user can press to trigger authentication 
+ * The activity should have a button or other view a user can press to trigger authentication
    * Authentication is initiated by invoking `getClient().connect()` within the LoginActivity.
 
 In more advanced cases where you want to authenticate **multiple services from a single activity**, check out the related
