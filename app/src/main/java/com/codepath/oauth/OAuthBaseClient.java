@@ -190,8 +190,8 @@ public abstract class OAuthBaseClient {
         public void onLoginFailure(Exception e);
     }
 
-    public void setLoggingEnabled(Boolean enabled) {
-        client.setLoggingEnabled(enabled);
+    public void enableProxy() {
+        client.setProxy(System.getProperty("http.proxyHost"), Integer.parseInt(System.getProperty("http.proxyPort")));
     }
 
     public void addHeader(String headerName, String headerValue) {
