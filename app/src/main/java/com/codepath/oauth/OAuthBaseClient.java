@@ -8,6 +8,7 @@ import android.net.Uri;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.model.OAuth1AccessToken;
 import com.github.scribejava.core.model.OAuth1RequestToken;
+import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.OAuthConstants;
 import com.github.scribejava.core.model.Token;
 
@@ -22,53 +23,73 @@ public abstract class OAuthBaseClient {
     protected OAuthAccessHandler accessHandler;
     protected String callbackUrl;
     protected int requestIntentFlags = -1;
-    
-    protected static HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient> instances = 
-    		new HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient>(); 
-    
+
+    private static final String OAUTH1_REQUEST_TOKEN = "request_token";
+    private static final String OAUTH1_REQUEST_TOKEN_SECRET = "request_token_secret";
+
+    protected static HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient> instances =
+            new HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient>();
+
     public static OAuthBaseClient getInstance(Class<? extends OAuthBaseClient> klass, Context context) {
-    	OAuthBaseClient instance = instances.get(klass);
-    	if (instance == null) {
-    		try {
-				instance = (OAuthBaseClient) klass.getConstructor(Context.class).newInstance(context);
-				instances.put(klass, instance);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-    	}
-    	return instance;
+        OAuthBaseClient instance = instances.get(klass);
+        if (instance == null) {
+            try {
+                instance = (OAuthBaseClient) klass.getConstructor(Context.class).newInstance(context);
+                instances.put(klass, instance);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return instance;
     }
-    
+
     public OAuthBaseClient(Context c, BaseApi apiInstance, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
         this.baseUrl = consumerUrl;
         this.callbackUrl = callbackUrl;
         client = new OAuthAsyncHttpClient(apiInstance, consumerKey,
                 consumerSecret, callbackUrl, new OAuthAsyncHttpClient.OAuthTokenHandler() {
-        	
-        	// Store request token and launch the authorization URL in the browser
+
+            // Store request token and launch the authorization URL in the browser
             @Override
-            public void onReceivedRequestToken(Token requestToken, String authorizeUrl) {
-            	if (requestToken != null) { // store for OAuth1.0a
-                    OAuth1RequestToken oAuth1RequestToken = (OAuth1RequestToken) requestToken;
-            		editor.putString("request_token", oAuth1RequestToken.getToken());
-            		editor.putString("request_token_secret", oAuth1RequestToken.getTokenSecret());
-            		editor.commit();
-            	}
-            	// Launch the authorization URL in the browser
+            public void onReceivedRequestToken(Token requestToken, String authorizeUrl, String oAuthVersion) {
+                if (requestToken != null) {
+                    if (oAuthVersion == "1.0") {  // store for OAuth1.0a
+                        OAuth1RequestToken oAuth1RequestToken = (OAuth1RequestToken) requestToken;
+                        editor.putString(OAUTH1_REQUEST_TOKEN, oAuth1RequestToken.getToken());
+                        editor.putString(OAUTH1_REQUEST_TOKEN_SECRET, oAuth1RequestToken.getTokenSecret());
+                        editor.commit();
+                    }
+                }
+                // Launch the authorization URL in the browser
                 Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizeUrl + "&perms=delete"));
-                if (requestIntentFlags != -1) { intent.setFlags(requestIntentFlags); }
+                if (requestIntentFlags != -1) {
+                    intent.setFlags(requestIntentFlags);
+                }
                 OAuthBaseClient.this.context.startActivity(intent);
             }
-            
+
             // Store the access token in preferences, set the token in the client and fire the success callback
             @Override
-            public void onReceivedAccessToken(Token accessToken) {
-                OAuth1AccessToken oAuth1AccessToken = (OAuth1AccessToken) accessToken;
+            public void onReceivedAccessToken(Token accessToken, String oAuthVersion) {
 
-                client.setAccessToken(accessToken);
-                editor.putString(OAuthConstants.TOKEN, oAuth1AccessToken.getToken());
-                editor.putString(OAuthConstants.TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
-                editor.commit();
+                if (oAuthVersion == "1.0") {
+                    OAuth1AccessToken oAuth1AccessToken = (OAuth1AccessToken) accessToken;
+
+                    client.setAccessToken(accessToken);
+                    editor.putString(OAuthConstants.TOKEN, oAuth1AccessToken.getToken());
+                    editor.putString(OAuthConstants.TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
+                    editor.putInt(OAuthConstants.VERSION, 1);
+                    editor.commit();
+                } else if (oAuthVersion == "2.0") {
+                    OAuth2AccessToken oAuth2AccessToken = (OAuth2AccessToken) accessToken;
+                    client.setAccessToken(accessToken);
+                    editor.putString(OAuthConstants.TOKEN, oAuth2AccessToken.getAccessToken());
+                    editor.putString(OAuthConstants.SCOPE, oAuth2AccessToken.getScope());
+                    editor.putString(OAuthConstants.REFRESH_TOKEN, oAuth2AccessToken.getRefreshToken());
+                    editor.putInt(OAuthConstants.VERSION, 2);
+                    editor.commit();
+
+                }
                 accessHandler.onLoginSuccess();
             }
 
@@ -76,7 +97,7 @@ public abstract class OAuthBaseClient {
             public void onFailure(Exception e) {
                 accessHandler.onLoginFailure(e);
             }
-            
+
         });
 
         this.context = c;
@@ -99,34 +120,37 @@ public abstract class OAuthBaseClient {
     public void authorize(Uri uri, OAuthAccessHandler handler) {
         this.accessHandler = handler;
         if (checkAccessToken() == null && uri != null) {
-    		String uriServiceCallback = uri.getScheme() + "://" +  uri.getHost();
-    		// check if the authorize callback matches this service before trying to get an access token
-    		if (uriServiceCallback.equals(callbackUrl)) { 
-              client.fetchAccessToken(getRequestToken(), uri);
-    		}
+            String uriServiceCallback = uri.getScheme() + "://" + uri.getHost();
+            // check if the authorize callback matches this service before trying to get an access token
+            if (uriServiceCallback.equals(callbackUrl)) {
+                client.fetchAccessToken(getOAuth1RequestToken(), uri);
+            }
         } else if (checkAccessToken() != null) { // already have access token
             this.accessHandler.onLoginSuccess();
         }
     }
 
     // Return access token if the token exists in preferences
-    public OAuth1RequestToken checkAccessToken() {
-        if (prefs.contains(OAuthConstants.TOKEN) && prefs.contains(OAuthConstants.TOKEN_SECRET)) {
+    public Token checkAccessToken() {
+        int oAuthVersion = prefs.getInt(OAuthConstants.VERSION, 0);
+
+        if (oAuthVersion == 1 && prefs.contains(OAuthConstants.TOKEN) && prefs.contains(OAuthConstants.TOKEN_SECRET)) {
             return new OAuth1RequestToken(prefs.getString(OAuthConstants.TOKEN, ""),
                     prefs.getString(OAuthConstants.TOKEN_SECRET, ""));
-        } else {
-            return null;
+        } else if (oAuthVersion == 2 && prefs.contains(OAuthConstants.TOKEN)) {
+            return new OAuth2AccessToken(prefs.getString(OAuthConstants.TOKEN, ""));
         }
+        return null;
     }
-    
+
     protected OAuthAsyncHttpClient getClient() {
-    	return client;
+        return client;
     }
-    
+
     // Returns the request token stored during the request token phase
-    protected OAuth1RequestToken getRequestToken() {
-    	return new OAuth1RequestToken(prefs.getString("request_token", ""),
-                prefs.getString("request_token_secret", ""));
+    protected OAuth1RequestToken getOAuth1RequestToken() {
+        return new OAuth1RequestToken(prefs.getString(OAUTH1_REQUEST_TOKEN, ""),
+                prefs.getString(OAUTH1_REQUEST_TOKEN_SECRET, ""));
     }
 
     // Assigns the base url for the API
@@ -136,30 +160,33 @@ public abstract class OAuthBaseClient {
 
     // Returns the full ApiUrl
     protected String getApiUrl(String path) {
-       return this.baseUrl + "/" + path;
+        return this.baseUrl + "/" + path;
     }
-    
+
     // Removes the access tokens (for signing out)
     public void clearAccessToken() {
-    	client.setAccessToken(null);
-    	editor.remove(OAuthConstants.TOKEN);
-    	editor.remove(OAuthConstants.TOKEN_SECRET);
+        client.setAccessToken(null);
+        editor.remove(OAuthConstants.TOKEN);
+        editor.remove(OAuthConstants.TOKEN_SECRET);
+        editor.remove(OAuthConstants.REFRESH_TOKEN);
+        editor.remove(OAuthConstants.SCOPE);
         editor.commit();
     }
-    
+
     // Returns true if the client is authenticated; false otherwise.
     public boolean isAuthenticated() {
-    	return client.getAccessToken() != null;
+        return client.getAccessToken() != null;
     }
-    
+
     // Sets the flags used when launching browser to authenticate through OAuth
     public void setRequestIntentFlags(int flags) {
-    	this.requestIntentFlags = flags;
+        this.requestIntentFlags = flags;
     }
 
     // Defines the handler events for the OAuth flow
     public static interface OAuthAccessHandler {
         public void onLoginSuccess();
+
         public void onLoginFailure(Exception e);
     }
 
