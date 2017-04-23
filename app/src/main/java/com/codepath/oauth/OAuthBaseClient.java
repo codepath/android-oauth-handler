@@ -190,4 +190,11 @@ public abstract class OAuthBaseClient {
         public void onLoginFailure(Exception e);
     }
 
+    public void setLoggingEnabled(Boolean enabled) {
+        client.setLoggingEnabled(enabled);
+    }
+
+    public void addHeader(String headerName, String headerValue) {
+        client.addHeader(headerName, headerValue);
+    }
 }
