@@ -23,17 +23,16 @@ import com.loopj.android.http.ResponseHandlerInterface;
  * The client is based on AsyncHttpClient for async http requests and uses Scribe to manage the OAuth authentication.
  */
 public class OAuthAsyncHttpClient extends AsyncHttpClient {
-   
-	private Class<? extends BaseApi> apiClass;
+
+    private BaseApi apiInstance;
     private OAuthTokenHandler handler;
     private Token accessToken;
     private OAuthService service;
 
     // Requires the apiClass, consumerKey, consumerSecret and callbackUrl along with the TokenHandler
-    public OAuthAsyncHttpClient(Class<? extends BaseApi> apiClass,
-                                BaseApi apiInstance, String consumerKey, String consumerSecret, String callbackUrl,
+    public OAuthAsyncHttpClient(BaseApi apiInstance, String consumerKey, String consumerSecret, String callbackUrl,
                                 OAuthTokenHandler handler) {
-    	this.apiClass = apiClass;
+        this.apiInstance = apiInstance;
         this.handler = handler;
         if (callbackUrl == null) { callbackUrl = OAuthConstants.OUT_OF_BAND; };
         this.service = new ServiceBuilder()
@@ -156,7 +155,7 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
             	e.printStackTrace();
             }
         } else if (accessToken == null) {
-        	throw new OAuthException("Cannot send unauthenticated requests for " + apiClass.getSimpleName() + " client. Please attach an access token!");
+        	throw new OAuthException("Cannot send unauthenticated requests for " + apiInstance.getClass().getSimpleName() + " client. Please attach an access token!");
         } else { // service is null
         	throw new OAuthException("Cannot send unauthenticated requests for undefined service. Please specify a valid api service!");
         }

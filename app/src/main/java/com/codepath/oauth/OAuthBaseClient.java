@@ -39,10 +39,10 @@ public abstract class OAuthBaseClient {
     	return instance;
     }
     
-    public OAuthBaseClient(Context c, Class<? extends BaseApi> apiClass, BaseApi apiInstance, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
+    public OAuthBaseClient(Context c, BaseApi apiInstance, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
         this.baseUrl = consumerUrl;
         this.callbackUrl = callbackUrl;
-        client = new OAuthAsyncHttpClient(apiClass, apiInstance, consumerKey,
+        client = new OAuthAsyncHttpClient(apiInstance, consumerKey,
                 consumerSecret, callbackUrl, new OAuthAsyncHttpClient.OAuthTokenHandler() {
         	
         	// Store request token and launch the authorization URL in the browser
@@ -81,7 +81,7 @@ public abstract class OAuthBaseClient {
 
         this.context = c;
         // Store preferences namespaced by the class and consumer key used
-        this.prefs = this.context.getSharedPreferences("OAuth_" + apiClass.getSimpleName() + "_" + consumerKey, 0);
+        this.prefs = this.context.getSharedPreferences("OAuth_" + apiInstance.getClass().getSimpleName() + "_" + consumerKey, 0);
         this.editor = this.prefs.edit();
         // Set access token in the client if already stored in preferences
         if (this.checkAccessToken() != null) {
