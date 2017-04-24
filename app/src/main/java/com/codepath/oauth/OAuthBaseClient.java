@@ -26,6 +26,8 @@ public abstract class OAuthBaseClient {
 
     private static final String OAUTH1_REQUEST_TOKEN = "request_token";
     private static final String OAUTH1_REQUEST_TOKEN_SECRET = "request_token_secret";
+    private static final String OAUTH1_VERSION = "1.0";
+    private static final String OAUTH2_VERSION = "2.0";
 
     protected static HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient> instances =
             new HashMap<Class<? extends OAuthBaseClient>, OAuthBaseClient>();
@@ -53,7 +55,7 @@ public abstract class OAuthBaseClient {
             @Override
             public void onReceivedRequestToken(Token requestToken, String authorizeUrl, String oAuthVersion) {
                 if (requestToken != null) {
-                    if (oAuthVersion == "1.0") {  // store for OAuth1.0a
+                    if (oAuthVersion == OAUTH1_VERSION) {  // store for OAuth1.0a
                         OAuth1RequestToken oAuth1RequestToken = (OAuth1RequestToken) requestToken;
                         editor.putString(OAUTH1_REQUEST_TOKEN, oAuth1RequestToken.getToken());
                         editor.putString(OAUTH1_REQUEST_TOKEN_SECRET, oAuth1RequestToken.getTokenSecret());
@@ -61,7 +63,7 @@ public abstract class OAuthBaseClient {
                     }
                 }
                 // Launch the authorization URL in the browser
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizeUrl + "&perms=delete"));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(authorizeUrl));
                 if (requestIntentFlags != -1) {
                     intent.setFlags(requestIntentFlags);
                 }
@@ -72,7 +74,7 @@ public abstract class OAuthBaseClient {
             @Override
             public void onReceivedAccessToken(Token accessToken, String oAuthVersion) {
 
-                if (oAuthVersion == "1.0") {
+                if (oAuthVersion == OAUTH1_VERSION) {
                     OAuth1AccessToken oAuth1AccessToken = (OAuth1AccessToken) accessToken;
 
                     client.setAccessToken(accessToken);
@@ -80,7 +82,7 @@ public abstract class OAuthBaseClient {
                     editor.putString(OAuthConstants.TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
                     editor.putInt(OAuthConstants.VERSION, 1);
                     editor.commit();
-                } else if (oAuthVersion == "2.0") {
+                } else if (oAuthVersion == OAUTH2_VERSION) {
                     OAuth2AccessToken oAuth2AccessToken = (OAuth2AccessToken) accessToken;
                     client.setAccessToken(accessToken);
                     editor.putString(OAuthConstants.TOKEN, oAuth2AccessToken.getAccessToken());
