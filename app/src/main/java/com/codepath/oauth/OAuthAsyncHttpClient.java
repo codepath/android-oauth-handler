@@ -3,11 +3,13 @@ package com.codepath.oauth;
 import android.content.Context;
 import android.net.Uri;
 
-import com.codepath.utils.AsyncSimpleTask;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.exceptions.OAuthException;
+import com.github.scribejava.core.model.OAuth1AccessToken;
 import com.github.scribejava.core.model.OAuth1RequestToken;
+import com.github.scribejava.core.model.OAuth2AccessToken;
+import com.github.scribejava.core.model.OAuthAsyncRequestCallback;
 import com.github.scribejava.core.model.OAuthConstants;
 import com.github.scribejava.core.model.Token;
 import com.github.scribejava.core.oauth.OAuth10aService;
@@ -45,86 +47,81 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     // Once fetched, fire the onReceivedRequestToken for the request token handler
     // Works for both OAuth1.0a and OAuth2
     public void fetchRequestToken() {
-        new AsyncSimpleTask(new AsyncSimpleTask.AsyncSimpleTaskHandler() {
-            String authorizeUrl = null;
-            Exception e = null;
-            Token requestToken;
+        if (service.getVersion() == "1.0") {
+            final OAuth10aService oAuth10aService = (OAuth10aService) service;
 
-            public void doInBackground() {
-                try {
-                	if (service.getVersion() == "1.0") {
-                        OAuth10aService oAuth10aService = (OAuth10aService) service;
-                    	requestToken = oAuth10aService.getRequestToken();
-                        authorizeUrl = oAuth10aService.getAuthorizationUrl((OAuth1RequestToken) requestToken);
-                	} else if (service.getVersion() == "2.0") {
-                        OAuth20Service oAuth20Service = (OAuth20Service) service;
-                        authorizeUrl = oAuth20Service.getAuthorizationUrl(null);
-                	}
-                } catch (Exception e) {
-                    this.e = e;
+            oAuth10aService.getRequestTokenAsync(new OAuthAsyncRequestCallback<OAuth1RequestToken>() {
+                @Override
+                public void onCompleted(OAuth1RequestToken response) {
+                    final String authorizeUrl = oAuth10aService.getAuthorizationUrl(response);
+                    handler.onReceivedRequestToken(response, authorizeUrl, service.getVersion());
                 }
-            }
 
-            public void onPostExecute() {
-                if (e != null) {
-                    handler.onFailure(e);
-                } else {
-                    handler.onReceivedRequestToken(requestToken, authorizeUrl, service.getVersion());
+                @Override
+                public void onThrowable(Throwable t) {
+                    handler.onFailure(t);
                 }
-            }
-        });
+            });
+        } else if (service.getVersion() == "2.0") {
+            OAuth20Service oAuth20Service = (OAuth20Service) service;
+            final String authorizeUrl = oAuth20Service.getAuthorizationUrl(null);
+            handler.onReceivedRequestToken(null, authorizeUrl, oAuth20Service.getVersion());
+        }
     }
 
     // Get the access token by exchanging the requestToken to the defined URL
     // Once receiving the access token, fires the onReceivedAccessToken method on the handler
     public void fetchAccessToken(final Token requestToken, final Uri uri) {
 
-        new AsyncSimpleTask(new AsyncSimpleTask.AsyncSimpleTaskHandler() {
-            Exception e = null;
-  
-            public void doInBackground() {
-            	// Fetch the verifier code from redirect url parameters
-                Uri authorizedUri = uri;
+        Uri authorizedUri = uri;
 
-            	try {
-                    if (service.getVersion() == "1.0") {
-                        // Use verifier token to fetch access token
+        if (service.getVersion() == "1.0") {
+            // Use verifier token to fetch access token
 
-                        if (authorizedUri.getQuery().contains(OAuthConstants.VERIFIER)) {
-                            String oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.VERIFIER);
-                            OAuth1RequestToken oAuth1RequestToken = (OAuth1RequestToken) requestToken;
-                            OAuth10aService oAuth10aService = (OAuth10aService) service;
-                            accessToken = oAuth10aService.getAccessToken(oAuth1RequestToken, oauth_verifier);
-                        }
-                        else { // verifier was null
-                            throw new OAuthException("No verifier code was returned with uri '" + uri + "' " +
-                                    "and access token cannot be retrieved");
-                        }
-                    } else if (service.getVersion() == "2.0") {
-                        if (authorizedUri.getQuery().contains(OAuthConstants.CODE)) {
-                            String code = authorizedUri.getQueryParameter(OAuthConstants.CODE);
-                            OAuth20Service oAuth20Service = (OAuth20Service) service;
-                            accessToken = oAuth20Service.getAccessToken(code);
-                        }
-                        else { // verifier was null
-                            throw new OAuthException("No code was returned with uri '" + uri + "' " +
-                                    "and access token cannot be retrieved");
-                        }
+            if (authorizedUri.getQuery().contains(OAuthConstants.VERIFIER)) {
+                String oauth_verifier = authorizedUri.getQueryParameter(OAuthConstants.VERIFIER);
+                OAuth1RequestToken oAuth1RequestToken = (OAuth1RequestToken) requestToken;
+                OAuth10aService oAuth10aService = (OAuth10aService) service;
+                oAuth10aService.getAccessTokenAsync(oAuth1RequestToken, oauth_verifier, new OAuthAsyncRequestCallback<OAuth1AccessToken>() {
+                    @Override
+                    public void onCompleted(OAuth1AccessToken response) {
+                        setAccessToken(response);
+                        handler.onReceivedAccessToken(accessToken, service.getVersion());
                     }
-                } catch (Exception e) {
-                    this.e = e;
-                }
-            }
 
-            public void onPostExecute() {
-                if (e != null) {
-                    handler.onFailure(e);
-                } else {
-                    setAccessToken(accessToken);
-                    handler.onReceivedAccessToken(accessToken, service.getVersion());
-                }
+                    @Override
+                    public void onThrowable(Throwable t) {
+                        handler.onFailure(t);
+                    }
+                });
             }
-        });
+            else { // verifier was null
+                throw new OAuthException("No verifier code was returned with uri '" + uri + "' " +
+                        "and access token cannot be retrieved");
+            }
+        } else if (service.getVersion() == "2.0") {
+            if (authorizedUri.getQuery().contains(OAuthConstants.CODE)) {
+                String code = authorizedUri.getQueryParameter(OAuthConstants.CODE);
+                OAuth20Service oAuth20Service = (OAuth20Service) service;
+                oAuth20Service.getAccessTokenAsync(code, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
+                    @Override
+                    public void onCompleted(OAuth2AccessToken response) {
+                        setAccessToken(response);
+                        handler.onReceivedAccessToken(response, service.getVersion());
+                    }
+
+                    @Override
+                    public void onThrowable(Throwable t) {
+
+                    }
+                });
+            }
+            else { // verifier was null
+                throw new OAuthException("No code was returned with uri '" + uri + "' " +
+                        "and access token cannot be retrieved");
+            }
+        }
+
     }
 
     // Set the access token used for signing requests
@@ -171,6 +168,6 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     public interface OAuthTokenHandler {
         public void onReceivedRequestToken(Token requestToken, String authorizeUrl, String oAuthVersion);
         public void onReceivedAccessToken(Token accessToken, String oAuthVersion);
-        public void onFailure(Exception e);
+        public void onFailure(Throwable e);
     }
 }

@@ -96,7 +96,7 @@ public abstract class OAuthBaseClient {
             }
 
             @Override
-            public void onFailure(Exception e) {
+            public void onFailure(Throwable e) {
                 accessHandler.onLoginFailure(e);
             }
 
@@ -189,7 +189,7 @@ public abstract class OAuthBaseClient {
     public static interface OAuthAccessHandler {
         public void onLoginSuccess();
 
-        public void onLoginFailure(Exception e);
+        public void onLoginFailure(Throwable e);
     }
 
     public void enableProxy() {
