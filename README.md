@@ -24,7 +24,7 @@ Next, add this line to your `app/build.gradle` file:
 
 ```gradle
 dependencies {
-    compile 'com.codepath.libraries:android-oauth-handler:1.1.0'
+    compile 'com.codepath.libraries:android-oauth-handler:1.1.2'
 }
 ```
 
@@ -240,4 +240,26 @@ In order to [troubleshoot API calls](http://guides.codepath.com/android/Troubles
 ```java
 RestClient client = RestApplication.getRestClient();
 client.enableProxy();
+```
+
+Proxies are useful for monitoring the network traffic but require a custom SSL certificate to be added to your emulator or device.  Because Android API 24 and above now require [explicit control](https://developer.android.com/training/articles/security-config.html) on custom SSL certificates that are used in apps, you will need to allow for added certs to be added by specifying `res/xml/network_security_config.xml` in your app:
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <debug-overrides>
+        <trust-anchors>
+            <!-- Trust user added CAs while debuggable only -->
+            <certificates src="user" />
+        </trust-anchors>
+    </debug-overrides>
+</network-security-config>
+```
+
+Inside your AndroidManifest.xml file, make sure to include this `networkSecurityConfig` parameter:
+
+```xml
+   <application
+       android:name=".RestApplication"
+       android:networkSecurityConfig="@xml/network_security_config"
 ```
