@@ -192,6 +192,16 @@ Check out [Android Async HTTP Docs](http://loopj.com/android-async-http/) for mo
 
 ## Extra Functionality
 
+### Adding Request Headers
+
+In certain cases, requests will require a particular custom header to be passed through the client. In this case, you can add custom headers to the client that will be added to all requests with:
+
+```java
+RestClient client = RestApplication.getRestClient();
+// Specify the header to append to the request
+client.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1)");
+```
+
 ### Access Authorization
 
 Once the request token has been received, an access token is granted by redirecting to the device's browser to allow the user to grant permission on the API provider's web address. The browser is opened using an implicit intent with no intent flags specified:
@@ -221,4 +231,13 @@ You can log out by clearing the access token at any time through the client obje
 ```java
 RestClient client = RestApplication.getRestClient();
 client.clearAccessToken();
+```
+
+### Enabling a Proxy
+
+In order to [troubleshoot API calls](http://guides.codepath.com/android/Troubleshooting-API-calls) using a method such as Charles Proxy, you'll want to enable proxy support with:
+
+```java
+RestClient client = RestApplication.getRestClient();
+client.enableProxy();
 ```
