@@ -39,6 +39,7 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
         if (callbackUrl == null) { callbackUrl = OAuthConstants.OUT_OF_BAND; };
         this.service = new ServiceBuilder()
         	.apiKey(consumerKey)
+                .httpClient(new com.github.scribejava.httpclient.loopj.AsyncHttpClient())
         	.apiSecret(consumerSecret).callback(callbackUrl)
         	.build(apiInstance);
     }
@@ -103,7 +104,7 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
             if (authorizedUri.getQuery().contains(OAuthConstants.CODE)) {
                 String code = authorizedUri.getQueryParameter(OAuthConstants.CODE);
                 OAuth20Service oAuth20Service = (OAuth20Service) service;
-                oAuth20Service.getAccessTokenAsync(code, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
+                oAuth20Service.getAccessToken(code, new OAuthAsyncRequestCallback<OAuth2AccessToken>() {
                     @Override
                     public void onCompleted(OAuth2AccessToken response) {
                         setAccessToken(response);
