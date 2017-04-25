@@ -120,6 +120,11 @@ ext {
   supportVersion = '25.3.1'
 }
 
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
     compile "com.android.support:appcompat-v7:${supportVersion}"
     compile "com.android.support:support-v4:${supportVersion}"
@@ -127,10 +132,10 @@ dependencies {
     compile files('libs/codepath-utils.jar')
 //    compile 'com.github.scribejava:scribejava-apis:4.1.0'
 
-    compile 'com.github.rogerhu:scribejava:loopj-SNAPSHOT'
-//    compile('com.github.rogerhu:scribejava:loopj-SNAPSHOT') {
-//        changing = true
-//    }
+//    compile 'com.github.rogerhu:scribejava:loopj-SNAPSHOT'
+    compile('com.github.rogerhu:scribejava:loopj-SNAPSHOT') {
+        changing = true
+    }
 
 }
 
