@@ -127,11 +127,16 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
 
     // Set the access token used for signing requests
     public void setAccessToken(Token accessToken) {
-    	if (accessToken == null) {
-    		this.accessToken = null;
-    	} else {
-    		this.accessToken = accessToken;
-    	}
+        if (accessToken instanceof OAuth1AccessToken || accessToken instanceof OAuth2AccessToken) {
+            if (accessToken == null) {
+                this.accessToken = null;
+            } else {
+                this.accessToken = accessToken;
+            }
+        }
+        else {
+            throw new IllegalStateException("Cannot set access token");
+        }
     }
     
     public Token getAccessToken() {
