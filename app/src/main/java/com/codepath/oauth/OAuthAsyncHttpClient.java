@@ -39,7 +39,7 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
         if (callbackUrl == null) { callbackUrl = OAuthConstants.OUT_OF_BAND; };
         this.service = new ServiceBuilder()
         	.apiKey(consumerKey)
-                .httpClient(new com.github.scribejava.httpclient.loopj.AsyncHttpClient())
+                .httpClient(new com.github.scribejava.httpclient.loopj.AsyncHttpClient(this))
         	.apiSecret(consumerSecret).callback(callbackUrl)
         	.build(apiInstance);
     }
