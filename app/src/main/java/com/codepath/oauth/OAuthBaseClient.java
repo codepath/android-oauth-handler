@@ -137,7 +137,7 @@ public abstract class OAuthBaseClient {
         int oAuthVersion = prefs.getInt(OAuthConstants.VERSION, 0);
 
         if (oAuthVersion == 1 && prefs.contains(OAuthConstants.TOKEN) && prefs.contains(OAuthConstants.TOKEN_SECRET)) {
-            return new OAuth1RequestToken(prefs.getString(OAuthConstants.TOKEN, ""),
+            return new OAuth1AccessToken(prefs.getString(OAuthConstants.TOKEN, ""),
                     prefs.getString(OAuthConstants.TOKEN_SECRET, ""));
         } else if (oAuthVersion == 2 && prefs.contains(OAuthConstants.TOKEN)) {
             return new OAuth2AccessToken(prefs.getString(OAuthConstants.TOKEN, ""));
