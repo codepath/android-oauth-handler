@@ -53,6 +53,12 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
+
+    // temporary
+    lintOptions {
+        abortOnError false
+    }
 }
 
 install {
@@ -114,12 +120,23 @@ ext {
   supportVersion = '25.3.1'
 }
 
+configurations.all {
+    // check for updates every build
+    resolutionStrategy.cacheChangingModulesFor 0, 'seconds'
+}
+
 dependencies {
     compile "com.android.support:appcompat-v7:${supportVersion}"
     compile "com.android.support:support-v4:${supportVersion}"
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile files('libs/codepath-utils.jar')
-    compile 'com.github.scribejava:scribejava-apis:4.1.0'
+//    compile 'com.github.scribejava:scribejava-apis:4.1.0'
+
+//    compile 'com.github.rogerhu:scribejava:loopj-SNAPSHOT'
+    compile('com.github.rogerhu:scribejava:loopj-SNAPSHOT') {
+        changing = true
+    }
+
 }
 
 /*task jar(type: Jar) {
