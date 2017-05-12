@@ -122,11 +122,9 @@ public abstract class OAuthBaseClient {
     public void authorize(Uri uri, OAuthAccessHandler handler) {
         this.accessHandler = handler;
         if (checkAccessToken() == null && uri != null) {
-            String uriServiceCallback = uri.getScheme() + "://" + uri.getHost();
-            // check if the authorize callback matches this service before trying to get an access token
-            if (uriServiceCallback.equals(callbackUrl)) {
-                client.fetchAccessToken(getOAuth1RequestToken(), uri);
-            }
+            // TODO: check UriServiceCallback with intent:// scheme
+            client.fetchAccessToken(getOAuth1RequestToken(), uri);
+
         } else if (checkAccessToken() != null) { // already have access token
             this.accessHandler.onLoginSuccess();
         }
