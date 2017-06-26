@@ -8,7 +8,7 @@ ext {
 
     GROUP = 'com.codepath.libraries'
     BASE_VERSION = "1.2"
-    VERSION_NAME = "1.2.4"
+    VERSION_NAME = "1.2.5-SNAPSHOT"
     POM_PACKAGING = "aar"
     POM_DESCRIPTION = "CodePath OAuth Handler"
 
@@ -33,7 +33,7 @@ archivesBaseName = POM_ARTIFACT_ID
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
 
     defaultConfig {
         versionCode 1
@@ -119,7 +119,7 @@ dependencies {
     compile "com.android.support:support-v4:${supportVersion}"
     compile 'com.loopj.android:android-async-http:1.4.9'
     compile files('libs/codepath-utils.jar')
-    compile 'com.github.scribejava:scribejava-apis:4.1.0'
+    compile 'com.github.scribejava:scribejava-apis:4.1.1'
 }
 
 /*task jar(type: Jar) {
