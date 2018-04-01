@@ -115,11 +115,11 @@ ext {
 }
 
 dependencies {
-    compile "com.android.support:appcompat-v7:${supportVersion}"
-    compile "com.android.support:support-v4:${supportVersion}"
-    compile 'com.loopj.android:android-async-http:1.4.9'
-    compile files('libs/codepath-utils.jar')
-    compile 'com.github.scribejava:scribejava-apis:4.1.1'
+    implementation "com.android.support:appcompat-v7:${supportVersion}"
+    implementation "com.android.support:support-v4:${supportVersion}"
+    implementation 'com.loopj.android:android-async-http:1.4.9'
+    implementation files('libs/codepath-utils.jar')
+    implementation 'com.github.scribejava:scribejava-apis:4.1.1'
 }
 
 /*task jar(type: Jar) {
