@@ -8,7 +8,7 @@ ext {
 
     GROUP = 'com.codepath.libraries'
     BASE_VERSION = "1.3"
-    VERSION_NAME = "1.3.0"
+    VERSION_NAME = "1.3.1"
     POM_PACKAGING = "aar"
     POM_DESCRIPTION = "CodePath OAuth Handler"
 
@@ -115,11 +115,11 @@ ext {
 }
 
 dependencies {
-    implementation "com.android.support:appcompat-v7:${supportVersion}"
-    implementation "com.android.support:support-v4:${supportVersion}"
-    implementation 'com.loopj.android:android-async-http:1.4.9'
+    api "com.android.support:appcompat-v7:${supportVersion}"
+    api "com.android.support:support-v4:${supportVersion}"
+    api 'com.loopj.android:android-async-http:1.4.9'
     implementation files('libs/codepath-utils.jar')
-    implementation 'com.github.scribejava:scribejava-apis:4.1.1'
+    api 'com.github.scribejava:scribejava-apis:4.1.1'
 }
 
 /*task jar(type: Jar) {
