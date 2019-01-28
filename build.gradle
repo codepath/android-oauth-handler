@@ -1,11 +1,11 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.0.1'
+        classpath 'com.android.tools.build:gradle:3.3.0'
     }
 }
 
@@ -24,8 +24,8 @@ bintray {
 
 allprojects {
     repositories {
-        jcenter()
         google()
+        jcenter()
     }
 }
 /*
