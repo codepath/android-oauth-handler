@@ -2,16 +2,13 @@ package com.codepath.oauth;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v4.app.FragmentActivity;
 
-import com.codepath.utils.GenericsUtil;
+import androidx.appcompat.app.AppCompatActivity;
 
-//This is the FragmentActivity supportv4 version of LoginActivity
-public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends FragmentActivity
-		implements OAuthBaseClient.OAuthAccessHandler {
+public abstract class OAuthLoginActivity extends
+		AppCompatActivity
+		implements OAuth1Client.OAuthAccessHandler, OAuth1ClientProvider {
 
-	private T client;
-	
 	// Use this to properly assign the new intent with callback code
 	// for activities with a "singleTask" launch mode
 	@Override
@@ -26,33 +23,23 @@ public abstract class OAuthLoginActivity<T extends OAuthBaseClient> extends Frag
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Class<T> clientClass = getClientClass();
-		// Extracts the authenticated url data after the user 
+		// Extracts the authenticated url data after the user
 		// authorizes the OAuth app in the browser 
 		Uri uri = getIntent().getData();
 
 		try {
-			client = (T) OAuthBaseClient.getInstance(clientClass, this);
-			client.authorize(uri, this); // fetch access token (if needed)
+			OAuth1Client client = getClient(this);
+			client.authorize(uri, this);  // fetch access token (if needed)
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-
-	public T getClient() {
-		return client;
-	}
-
-	@SuppressWarnings("unchecked")
-	private Class<T> getClientClass() {
-		return (Class<T>) GenericsUtil.getTypeArguments(OAuthLoginActivity.class, this.getClass()).get(0);
-	}
 }
 
 /*
- * 1) Subclass OAuthBaseClient like TwitterClient 
- * 2) Subclass OAuthLoginActivity<TwitterClient> 
- * 3) Invoke .login 
+ * 1) Instantiate an OAuth client through OAuthAsyncHttpClient
+ * 2) Subclass OAuthLoginActivity and implement getClient()
+ * 3) Invoke .connect()
  * 4) Optionally override 
  *   a) onLoginSuccess 
  *   b) onLoginFailure(Exception e) 
