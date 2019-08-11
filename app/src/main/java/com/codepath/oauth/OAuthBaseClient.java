@@ -17,7 +17,7 @@ import java.util.HashMap;
 public abstract class OAuthBaseClient {
     protected String baseUrl;
     protected Context context;
-    protected OAuthTokenClient client;
+    protected OAuthTokenClient tokenClient;
     protected SharedPreferences prefs;
     protected SharedPreferences.Editor editor;
     protected OAuthAccessHandler accessHandler;
@@ -48,7 +48,7 @@ public abstract class OAuthBaseClient {
     public OAuthBaseClient(Context c, BaseApi apiInstance, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
         this.baseUrl = consumerUrl;
         this.callbackUrl = callbackUrl;
-        client = new OAuthTokenClient(apiInstance, consumerKey,
+        tokenClient = new OAuthTokenClient(apiInstance, consumerKey,
                 consumerSecret, callbackUrl, new OAuthTokenClient.OAuthTokenHandler() {
 
             // Store request token and launch the authorization URL in the browser
@@ -70,21 +70,21 @@ public abstract class OAuthBaseClient {
                 OAuthBaseClient.this.context.startActivity(intent);
             }
 
-            // Store the access token in preferences, set the token in the client and fire the success callback
+            // Store the access token in preferences, set the token in the tokenClient and fire the success callback
             @Override
             public void onReceivedAccessToken(Token accessToken, String oAuthVersion) {
 
                 if (oAuthVersion == OAUTH1_VERSION) {
                     OAuth1AccessToken oAuth1AccessToken = (OAuth1AccessToken) accessToken;
 
-                    client.setAccessToken(accessToken);
+                    tokenClient.setAccessToken(accessToken);
                     editor.putString(OAuthConstants.TOKEN, oAuth1AccessToken.getToken());
                     editor.putString(OAuthConstants.TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
                     editor.putInt(OAuthConstants.VERSION, 1);
                     editor.commit();
                 } else if (oAuthVersion == OAUTH2_VERSION) {
                     OAuth2AccessToken oAuth2AccessToken = (OAuth2AccessToken) accessToken;
-                    client.setAccessToken(accessToken);
+                    tokenClient.setAccessToken(accessToken);
                     editor.putString(OAuthConstants.TOKEN, oAuth2AccessToken.getAccessToken());
                     editor.putString(OAuthConstants.SCOPE, oAuth2AccessToken.getScope());
                     editor.putString(OAuthConstants.REFRESH_TOKEN, oAuth2AccessToken.getRefreshToken());
@@ -106,16 +106,16 @@ public abstract class OAuthBaseClient {
         // Store preferences namespaced by the class and consumer key used
         this.prefs = this.context.getSharedPreferences("OAuth_" + apiInstance.getClass().getSimpleName() + "_" + consumerKey, 0);
         this.editor = this.prefs.edit();
-        // Set access token in the client if already stored in preferences
+        // Set access token in the tokenClient if already stored in preferences
         if (this.checkAccessToken() != null) {
-            client.setAccessToken(this.checkAccessToken());
+            tokenClient.setAccessToken(this.checkAccessToken());
         }
     }
 
     // Fetches a request token and retrieve and authorization url
     // Should open a browser in onReceivedRequestToken once the url has been received
     public void connect() {
-        client.fetchRequestToken();
+        tokenClient.fetchRequestToken();
     }
 
     // Retrieves access token given authorization url
@@ -123,7 +123,7 @@ public abstract class OAuthBaseClient {
         this.accessHandler = handler;
         if (checkAccessToken() == null && uri != null) {
             // TODO: check UriServiceCallback with intent:// scheme
-            client.fetchAccessToken(getOAuth1RequestToken(), uri);
+            tokenClient.fetchAccessToken(getOAuth1RequestToken(), uri);
 
         } else if (checkAccessToken() != null) { // already have access token
             this.accessHandler.onLoginSuccess();
@@ -143,8 +143,8 @@ public abstract class OAuthBaseClient {
         return null;
     }
 
-    protected OAuthTokenClient getClient() {
-        return client;
+    protected OAuthTokenClient getTokenClient() {
+        return tokenClient;
     }
 
     // Returns the request token stored during the request token phase
@@ -165,7 +165,7 @@ public abstract class OAuthBaseClient {
 
     // Removes the access tokens (for signing out)
     public void clearAccessToken() {
-        client.setAccessToken(null);
+        tokenClient.setAccessToken(null);
         editor.remove(OAuthConstants.TOKEN);
         editor.remove(OAuthConstants.TOKEN_SECRET);
         editor.remove(OAuthConstants.REFRESH_TOKEN);
@@ -173,9 +173,9 @@ public abstract class OAuthBaseClient {
         editor.commit();
     }
 
-    // Returns true if the client is authenticated; false otherwise.
+    // Returns true if the tokenClient is authenticated; false otherwise.
     public boolean isAuthenticated() {
-        return client.getAccessToken() != null;
+        return tokenClient.getAccessToken() != null;
     }
 
     // Sets the flags used when launching browser to authenticate through OAuth
