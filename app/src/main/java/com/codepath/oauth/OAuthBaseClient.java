@@ -17,7 +17,7 @@ import java.util.HashMap;
 public abstract class OAuthBaseClient {
     protected String baseUrl;
     protected Context context;
-    protected OAuthAsyncHttpClient client;
+    protected OAuthTokenClient client;
     protected SharedPreferences prefs;
     protected SharedPreferences.Editor editor;
     protected OAuthAccessHandler accessHandler;
@@ -48,8 +48,8 @@ public abstract class OAuthBaseClient {
     public OAuthBaseClient(Context c, BaseApi apiInstance, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
         this.baseUrl = consumerUrl;
         this.callbackUrl = callbackUrl;
-        client = new OAuthAsyncHttpClient(apiInstance, consumerKey,
-                consumerSecret, callbackUrl, new OAuthAsyncHttpClient.OAuthTokenHandler() {
+        client = new OAuthTokenClient(apiInstance, consumerKey,
+                consumerSecret, callbackUrl, new OAuthTokenClient.OAuthTokenHandler() {
 
             // Store request token and launch the authorization URL in the browser
             @Override
@@ -143,7 +143,7 @@ public abstract class OAuthBaseClient {
         return null;
     }
 
-    protected OAuthAsyncHttpClient getClient() {
+    protected OAuthTokenClient getClient() {
         return client;
     }
 

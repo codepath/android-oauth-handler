@@ -1,10 +1,7 @@
 package com.codepath.oauth;
 
-import android.content.Context;
 import android.net.Uri;
 
-import com.codepath.asynchttpclient.AsyncHttpClient;
-import com.codepath.utils.AsyncSimpleTask;
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.exceptions.OAuthException;
@@ -19,11 +16,11 @@ import com.github.scribejava.core.oauth.OAuth20Service;
 import com.github.scribejava.core.oauth.OAuthService;
 
 /*
- * OAuthAsyncHttpClient is responsible for managing the request and access token exchanges and then
+ * OAuthTokenClient is responsible for managing the request and access token exchanges and then
  * signing all requests with the OAuth signature after access token has been retrieved and stored.
  * The client is based on AsyncHttpClient for async http requests and uses Scribe to manage the OAuth authentication.
  */
-public class OAuthAsyncHttpClient extends AsyncHttpClient {
+public class OAuthTokenClient {
 
     private BaseApi apiInstance;
     private OAuthTokenHandler handler;
@@ -31,8 +28,8 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     private OAuthService service;
 
     // Requires the apiClass, consumerKey, consumerSecret and callbackUrl along with the TokenHandler
-    public OAuthAsyncHttpClient(BaseApi apiInstance, String consumerKey, String consumerSecret, String callbackUrl,
-                                OAuthTokenHandler handler) {
+    public OAuthTokenClient(BaseApi apiInstance, String consumerKey, String consumerSecret, String callbackUrl,
+                            OAuthTokenHandler handler) {
         this.apiInstance = apiInstance;
         this.handler = handler;
         if (callbackUrl == null) { callbackUrl = OAuthConstants.OUT_OF_BAND; };
