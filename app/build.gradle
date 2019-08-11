@@ -37,7 +37,7 @@ android {
     defaultConfig {
         versionCode 1
         versionName VERSION_NAME
-        minSdkVersion 14
+        minSdkVersion 21
         targetSdkVersion 28
     }
 
@@ -114,8 +114,7 @@ ext {
 }
 
 dependencies {
-    api "com.android.support:appcompat-v7:${supportVersion}"
-    api "com.android.support:support-v4:${supportVersion}"
+    api "androidx.appcompat:appcompat:1.0.2"
     api 'com.loopj.android:android-async-http:1.4.9'
     implementation files('libs/codepath-utils.jar')
     api 'com.github.scribejava:scribejava-apis:4.1.1'
