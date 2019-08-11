@@ -18,6 +18,7 @@ public abstract class OAuthBaseClient {
     protected String baseUrl;
     protected Context context;
     protected OAuthTokenClient tokenClient;
+    protected OAuthAsyncHttpClient client;
     protected SharedPreferences prefs;
     protected SharedPreferences.Editor editor;
     protected OAuthAccessHandler accessHandler;
@@ -45,7 +46,7 @@ public abstract class OAuthBaseClient {
         return instance;
     }
 
-    public OAuthBaseClient(Context c, BaseApi apiInstance, String consumerUrl, String consumerKey, String consumerSecret, String callbackUrl) {
+    public OAuthBaseClient(Context c, final BaseApi apiInstance, String consumerUrl, final String consumerKey, final String consumerSecret, String callbackUrl) {
         this.baseUrl = consumerUrl;
         this.callbackUrl = callbackUrl;
         tokenClient = new OAuthTokenClient(apiInstance, consumerKey,
@@ -78,12 +79,15 @@ public abstract class OAuthBaseClient {
                     OAuth1AccessToken oAuth1AccessToken = (OAuth1AccessToken) accessToken;
 
                     tokenClient.setAccessToken(accessToken);
+                    instantiateClient(consumerKey, consumerSecret, oAuth1AccessToken);
                     editor.putString(OAuthConstants.TOKEN, oAuth1AccessToken.getToken());
                     editor.putString(OAuthConstants.TOKEN_SECRET, oAuth1AccessToken.getTokenSecret());
                     editor.putInt(OAuthConstants.VERSION, 1);
                     editor.commit();
                 } else if (oAuthVersion == OAUTH2_VERSION) {
                     OAuth2AccessToken oAuth2AccessToken = (OAuth2AccessToken) accessToken;
+
+                    //TODO(rhu) - create client for OAuth2 cases
                     tokenClient.setAccessToken(accessToken);
                     editor.putString(OAuthConstants.TOKEN, oAuth2AccessToken.getAccessToken());
                     editor.putString(OAuthConstants.SCOPE, oAuth2AccessToken.getScope());
@@ -107,11 +111,22 @@ public abstract class OAuthBaseClient {
         this.prefs = this.context.getSharedPreferences("OAuth_" + apiInstance.getClass().getSimpleName() + "_" + consumerKey, 0);
         this.editor = this.prefs.edit();
         // Set access token in the tokenClient if already stored in preferences
-        if (this.checkAccessToken() != null) {
-            tokenClient.setAccessToken(this.checkAccessToken());
+        Token accessToken = this.checkAccessToken();
+        if (accessToken != null) {
+            tokenClient.setAccessToken(accessToken);
+            instantiateClient(consumerKey, consumerSecret, accessToken);
         }
     }
 
+    public void instantiateClient(String consumerKey, String consumerSecret, Token token) {
+
+        if (token instanceof OAuth1AccessToken) {
+            client = OAuthAsyncHttpClient.create(consumerKey, consumerSecret, (OAuth1AccessToken)(token));
+        } else {
+
+        }
+
+    }
     // Fetches a request token and retrieve and authorization url
     // Should open a browser in onReceivedRequestToken once the url has been received
     public void connect() {

@@ -14,6 +14,7 @@ import com.github.scribejava.core.model.Token;
 import com.github.scribejava.core.oauth.OAuth10aService;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.github.scribejava.core.oauth.OAuthService;
+import com.github.scribejava.httpclient.okhttp.OkHttpHttpClientConfig;
 
 /*
  * OAuthTokenClient is responsible for managing the request and access token exchanges and then
@@ -34,9 +35,10 @@ public class OAuthTokenClient {
         this.handler = handler;
         if (callbackUrl == null) { callbackUrl = OAuthConstants.OUT_OF_BAND; };
         this.service = new ServiceBuilder()
-        	.apiKey(consumerKey)
-        	.apiSecret(consumerSecret).callback(callbackUrl)
-        	.build(apiInstance);
+                .apiKey(consumerKey)
+                .apiSecret(consumerSecret).callback(callbackUrl)
+                .httpClientConfig(OkHttpHttpClientConfig.defaultConfig())
+                .build(apiInstance);
     }
 
     // Get a request token and the authorization url
@@ -85,6 +87,7 @@ public class OAuthTokenClient {
 
                             @Override
                             public void onCompleted(OAuth1AccessToken oAuth1AccessToken) {
+                                setAccessToken(oAuth1AccessToken);
                                 handler.onReceivedAccessToken(oAuth1AccessToken, service.getVersion());
                             }
 
