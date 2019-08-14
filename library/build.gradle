@@ -54,49 +54,16 @@ android {
     }
 }
 
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            name POM_NAME
-            description POM_DESCRIPTION
-            url POM_URL
-            inceptionYear '2016'
-
-            packaging 'aar'
-            group GROUP
-            artifactId POM_ARTIFACT_ID
-            version VERSION_NAME
-
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-            scm {
-                connection POM_SCM_URL
-                url POM_SCM_CONNECTION
-
-            }
-            developers {
-                developer {
-                    name 'CodePath, Inc.'
-                }
-            }
-        }
-    }
-}
-
 bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_API_KEY')
+    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
+    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+
     configurations = ['archives']  // needs apply plugin 'com.jfrog.bintray' to work
 
     pkg {
         repo = 'maven'
         name = 'android-oauth-handler'
-//        userOrg = 'codepath'
+        userOrg = 'codepath'
         licenses = ['Apache-2.0']
         vcsUrl = 'https://github.com/codepath/android-oauth-handler.git'
         version {
@@ -107,6 +74,15 @@ bintray {
         }
     }
 
+}
+
+task sourcesJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    archiveClassifier.set("sources")
+}
+
+artifacts {
+    archives sourcesJar
 }
 
 ext {
