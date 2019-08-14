@@ -4,7 +4,9 @@ import com.codepath.utils.GenericsUtil;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 
 // This is the ActionBarActivity supportv7 version of LoginActivity
 public abstract class OAuthLoginActionBarActivity<T extends OAuthBaseClient> extends
