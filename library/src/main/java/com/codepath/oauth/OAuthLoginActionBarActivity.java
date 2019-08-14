@@ -1,11 +1,11 @@
 package com.codepath.oauth;
 
-import com.codepath.utils.GenericsUtil;
-
 import android.content.Intent;
 import android.net.Uri;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.codepath.utils.GenericsUtil;
 
 
 // This is the ActionBarActivity supportv7 version of LoginActivity

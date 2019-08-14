@@ -7,8 +7,8 @@ apply plugin: 'com.jfrog.bintray'
 ext {
 
     GROUP = 'com.codepath.libraries'
-    BASE_VERSION = "1.4"
-    VERSION_NAME = "1.4.0"
+    BASE_VERSION = "2.0"
+    VERSION_NAME = "2.0.0"
     POM_PACKAGING = "aar"
     POM_DESCRIPTION = "CodePath OAuth Handler"
 
@@ -115,9 +115,15 @@ ext {
 
 dependencies {
     api "androidx.appcompat:appcompat:1.0.2"
-    api 'com.loopj.android:android-async-http:1.4.9'
+    api 'com.codepath.libraries:asynchttpclient:0.0.5'
     implementation files('libs/codepath-utils.jar')
     api 'com.github.scribejava:scribejava-apis:4.1.1'
+    api 'com.github.scribejava:scribejava-httpclient-okhttp:4.1.1'
+    implementation 'se.akerfeldt:okhttp-signpost:1.1.0'
+    implementation 'oauth.signpost:signpost-core:1.2.1.2'
+    implementation 'com.facebook.stetho:stetho:1.5.1'
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
+
 }
 
 /*task jar(type: Jar) {
