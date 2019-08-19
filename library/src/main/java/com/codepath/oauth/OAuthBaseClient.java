@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import com.github.scribejava.core.builder.api.BaseApi;
 import com.github.scribejava.core.model.OAuth1AccessToken;
 import com.github.scribejava.core.model.OAuth1RequestToken;
@@ -46,11 +48,11 @@ public abstract class OAuthBaseClient {
         return instance;
     }
 
-    public OAuthBaseClient(Context c, final BaseApi apiInstance, String consumerUrl, final String consumerKey, final String consumerSecret, String callbackUrl) {
+    public OAuthBaseClient(Context c, final BaseApi apiInstance, String consumerUrl, final String consumerKey, final String consumerSecret, @Nullable String scope, String callbackUrl) {
         this.baseUrl = consumerUrl;
         this.callbackUrl = callbackUrl;
         tokenClient = new OAuthTokenClient(apiInstance, consumerKey,
-                consumerSecret, callbackUrl, new OAuthTokenClient.OAuthTokenHandler() {
+                consumerSecret, callbackUrl, scope, new OAuthTokenClient.OAuthTokenHandler() {
 
             // Store request token and launch the authorization URL in the browser
             @Override
@@ -86,8 +88,7 @@ public abstract class OAuthBaseClient {
                     editor.commit();
                 } else if (oAuthVersion == OAUTH2_VERSION) {
                     OAuth2AccessToken oAuth2AccessToken = (OAuth2AccessToken) accessToken;
-
-                    //TODO(rhu) - create client for OAuth2 cases
+                    instantiateClient(consumerKey, consumerSecret, oAuth2AccessToken);
                     tokenClient.setAccessToken(accessToken);
                     editor.putString(OAuthConstants.TOKEN, oAuth2AccessToken.getAccessToken());
                     editor.putString(OAuthConstants.SCOPE, oAuth2AccessToken.getScope());
@@ -122,8 +123,10 @@ public abstract class OAuthBaseClient {
 
         if (token instanceof OAuth1AccessToken) {
             client = OAuthAsyncHttpClient.create(consumerKey, consumerSecret, (OAuth1AccessToken)(token));
+        } else if (token instanceof OAuth2AccessToken){
+            client = OAuthAsyncHttpClient.create((OAuth2AccessToken) token);
         } else {
-
+            throw new IllegalStateException("unrecognized token type" + token);
         }
 
     }
@@ -138,7 +141,7 @@ public abstract class OAuthBaseClient {
         this.accessHandler = handler;
         if (checkAccessToken() == null && uri != null) {
             // TODO: check UriServiceCallback with intent:// scheme
-            tokenClient.fetchAccessToken(getOAuth1RequestToken(), uri);
+            tokenClient.fetchAccessToken(checkAccessToken(), uri);
 
         } else if (checkAccessToken() != null) { // already have access token
             this.accessHandler.onLoginSuccess();

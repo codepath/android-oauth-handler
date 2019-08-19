@@ -30,7 +30,7 @@ public class OAuthTokenClient {
 
     // Requires the apiClass, consumerKey, consumerSecret and callbackUrl along with the TokenHandler
     public OAuthTokenClient(BaseApi apiInstance, String consumerKey, String consumerSecret, String callbackUrl,
-                            OAuthTokenHandler handler) {
+                            String scope, OAuthTokenHandler handler) {
         this.apiInstance = apiInstance;
         this.handler = handler;
         if (callbackUrl == null) { callbackUrl = OAuthConstants.OUT_OF_BAND; };
@@ -38,6 +38,7 @@ public class OAuthTokenClient {
                 .apiKey(consumerKey)
                 .apiSecret(consumerSecret).callback(callbackUrl)
                 .httpClientConfig(OkHttpHttpClientConfig.defaultConfig())
+                .scope(scope) // OAuth2 requires scope
                 .build(apiInstance);
     }
 
