@@ -91,7 +91,7 @@ ext {
 
 dependencies {
     api "androidx.appcompat:appcompat:1.0.2"
-    api 'com.codepath.libraries:asynchttpclient:0.0.5'
+    api 'com.codepath.libraries:asynchttpclient:0.0.8'
     implementation files('libs/codepath-utils.jar')
     api 'com.github.scribejava:scribejava-apis:4.1.1'
     api 'com.github.scribejava:scribejava-httpclient-okhttp:4.1.1'
