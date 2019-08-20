@@ -62,6 +62,7 @@ public abstract class OAuthBaseClient {
                         OAuth1RequestToken oAuth1RequestToken = (OAuth1RequestToken) requestToken;
                         editor.putString(OAUTH1_REQUEST_TOKEN, oAuth1RequestToken.getToken());
                         editor.putString(OAUTH1_REQUEST_TOKEN_SECRET, oAuth1RequestToken.getTokenSecret());
+                        editor.putInt(OAuthConstants.VERSION, 1);
                         editor.commit();
                     }
                 }
@@ -141,7 +142,7 @@ public abstract class OAuthBaseClient {
         this.accessHandler = handler;
         if (checkAccessToken() == null && uri != null) {
             // TODO: check UriServiceCallback with intent:// scheme
-            tokenClient.fetchAccessToken(checkAccessToken(), uri);
+            tokenClient.fetchAccessToken(getOAuth1RequestToken(), uri);
 
         } else if (checkAccessToken() != null) { // already have access token
             this.accessHandler.onLoginSuccess();
@@ -165,10 +166,15 @@ public abstract class OAuthBaseClient {
         return tokenClient;
     }
 
-    // Returns the request token stored during the request token phase
-    protected OAuth1RequestToken getOAuth1RequestToken() {
-        return new OAuth1RequestToken(prefs.getString(OAUTH1_REQUEST_TOKEN, ""),
-                prefs.getString(OAUTH1_REQUEST_TOKEN_SECRET, ""));
+    // Returns the request token stored during the request token phase (OAuth1 only)
+    protected @Nullable Token getOAuth1RequestToken() {
+        int oAuthVersion = prefs.getInt(OAuthConstants.VERSION, 0);
+
+        if (oAuthVersion == 1) {
+            return new OAuth1RequestToken(prefs.getString(OAUTH1_REQUEST_TOKEN, ""),
+                    prefs.getString(OAUTH1_REQUEST_TOKEN_SECRET, ""));
+        }
+        return null;
     }
 
     // Assigns the base url for the API
