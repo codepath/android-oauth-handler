@@ -13,6 +13,7 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer;
 import se.akerfeldt.okhttp.signpost.SigningInterceptor;
 
@@ -22,10 +23,21 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
         super(httpClient);
     }
 
+    private static String BEARER = "Bearer";
+
+    public static HttpLoggingInterceptor createLogger() {
+        HttpLoggingInterceptor logger = new HttpLoggingInterceptor();
+        logger.level(HttpLoggingInterceptor.Level.HEADERS);
+        return logger;
+    }
+
     public static OAuthAsyncHttpClient create(String consumerKey, String consumerSecret, OAuth1AccessToken token) {
         OkHttpOAuthConsumer consumer = new OkHttpOAuthConsumer(consumerKey, consumerSecret);
+        HttpLoggingInterceptor logging = createLogger();
+
         consumer.setTokenWithSecret(token.getToken(), token.getTokenSecret());
         OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addInterceptor(logging)
                 .addNetworkInterceptor(new StethoInterceptor())
                 .addInterceptor(new SigningInterceptor(consumer)).build();
 
@@ -34,9 +46,12 @@ public class OAuthAsyncHttpClient extends AsyncHttpClient {
     }
 
     public static OAuthAsyncHttpClient create(final OAuth2AccessToken token) {
-        final String bearer = String.format("Bearer %s", token.getAccessToken());
+        final String bearer = String.format("%s %s", BEARER, token.getAccessToken());
+
+        HttpLoggingInterceptor logging = createLogger();
 
         OkHttpClient httpClient = new OkHttpClient.Builder()
+                .addInterceptor(logging)
                 .addNetworkInterceptor(new StethoInterceptor())
                 .addInterceptor(new Interceptor() {
                                     @NotNull

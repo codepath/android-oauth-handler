@@ -24,7 +24,7 @@ Next, add this line to your `app/build.gradle` file:
 
 ```gradle
 dependencies {
-    compile 'com.codepath.libraries:android-oauth-handler:2.1.1'
+    compile 'com.codepath.libraries:android-oauth-handler:2.1.3'
 }
 ```
 
