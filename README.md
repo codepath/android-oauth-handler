@@ -6,7 +6,7 @@ approach that keeps the details of the OAuth process abstracted from the end-use
 This library leverages a few key libraries underneath to power the functionality:
 
  * [scribe-java](https://github.com/scribejava/scribejava) - Simple OAuth library for handling the authentication flow.
- * [Android Async HTTP](https://github.com/loopj/android-async-http) - Simple asynchronous HTTP requests with JSON parsing.
+ * [Android Async HTTP](https://github.com/codepath/asynchttpclient) - Simple asynchronous HTTP requests with JSON parsing.
 
 ## Installation
 
@@ -24,7 +24,7 @@ Next, add this line to your `app/build.gradle` file:
 
 ```gradle
 dependencies {
-    compile 'com.codepath.libraries:android-oauth-handler:1.3.1'
+    compile 'com.codepath.libraries:android-oauth-handler:2.1.1'
 }
 ```
 
@@ -51,12 +51,12 @@ public class TwitterClient extends OAuthBaseClient {
 
     public TwitterClient(Context context) {
         super(context, REST_API_INSTANCE, REST_URL,
-          REST_CONSUMER_KEY, REST_CONSUMER_SECRET, REST_CALLBACK_URL);
+          REST_CONSUMER_KEY, REST_CONSUMER_SECRET, null, REST_CALLBACK_URL);
     }
 
     // ENDPOINTS BELOW
 
-    public void getHomeTimeline(int page, AsyncHttpResponseHandler handler) {
+    public void getHomeTimeline(int page, JsonHttpResponseHandler handler) {
       String apiUrl = getApiUrl("statuses/home_timeline.json");
       RequestParams params = new RequestParams();
       params.put("page", String.valueOf(page));
@@ -169,9 +169,9 @@ with a `JsonHttpResponseHandler` handler:
 // SomeActivity.java
 RestClient client = RestClientApp.getRestClient();
 client.getHomeTimeline(1, new JsonHttpResponseHandler() {
-  public void onSuccess(int statusCode, Header[] headers, JSONArray json) {
+  public void onSuccess(int statusCode, Headers headers, JSON json) {
     // Response is automatically parsed into a JSONArray
-    // json.getJSONObject(0).getLong("id");
+    // json.jsonArray.getJSONObject(0).getLong("id");
   }
 });
 ```
@@ -180,27 +180,18 @@ Based on the JSON response (array or object), you need to declare the expected t
 
 ```java
 RestClient client = RestClientApp.getRestClient();
-client.get("http://www.google.com", new AsyncHttpResponseHandler() {
+client.get("http://www.google.com", new JsonHttpResponseHandler() {
     @Override
-    public void onSuccess(int statusCode, Header[] headers, String response) {
+    public void onSuccess(int statusCode, Headers headers, String response) {
         System.out.println(response);
     }
 });
 ```
 
-Check out [Android Async HTTP Docs](http://loopj.com/android-async-http/) for more request creation details.
+Check out [Android Async HTTP Docs](https://github.com/codepath/asynchttpclient) for more request creation details.
 
 ## Extra Functionality
 
-### Adding Request Headers
-
-In certain cases, requests will require a particular custom header to be passed through the client. In this case, you can add custom headers to the client that will be added to all requests with:
-
-```java
-RestClient client = RestApplication.getRestClient();
-// Specify the header to append to the request
-client.addHeader("User-Agent", "Mozilla/5.0 (Windows NT 6.1)");
-```
 
 ### Access Authorization
 
@@ -226,40 +217,32 @@ This can be helpful in cases where you must add a flag such as when encountering
 
 You can log out by clearing the access token at any time through the client object:
 
-You can log out by clearing the access token at any time through the client object:
-
 ```java
 RestClient client = RestApplication.getRestClient();
 client.clearAccessToken();
 ```
 
-### Enabling a Proxy
+### Debugging
 
-In order to [troubleshoot API calls](http://guides.codepath.com/android/Troubleshooting-API-calls) using a method such as Charles Proxy, you'll want to enable proxy support with:
+In order to [troubleshoot API calls](http://guides.codepath.com/android/Troubleshooting-API-calls), you can take advantage of the Stetho library:
 
+Next, initialize Stetho inside your Application object:
 ```java
-RestClient client = RestApplication.getRestClient();
-client.enableProxy();
+public class MyApplication extends Application {
+  public void onCreate() {
+    super.onCreate();
+    Stetho.initializeWithDefaults(this);
+  }
+}
 ```
 
-Proxies are useful for monitoring the network traffic but require a custom SSL certificate to be added to your emulator or device.  Because Android API 24 and above now require [explicit control](https://developer.android.com/training/articles/security-config.html) on custom SSL certificates that are used in apps, you will need to allow for added certs to be added by specifying `res/xml/network_security_config.xml` in your app:
-
+Edit the manifest.xml file in your project. To let the Android operating system know that you have a custom Application class, add an attribute called  `android:name`  to the manifest’s application tag and set the value to the name of your custom Application class.
 ```xml
-<?xml version="1.0" encoding="utf-8"?>
-<network-security-config>
-    <debug-overrides>
-        <trust-anchors>
-            <!-- Trust user added CAs while debuggable only -->
-            <certificates src="user" />
-        </trust-anchors>
-    </debug-overrides>
-</network-security-config>
+ <application
+    ...
+    android:name=".MyApplication"
+    ...
+    >
 ```
 
-Inside your AndroidManifest.xml file, make sure to include this `networkSecurityConfig` parameter:
-
-```xml
-   <application
-       android:name=".RestApplication"
-       android:networkSecurityConfig="@xml/network_security_config"
-```
+You can then use `chrome://inspect`, pick the app currently running, and click on the Network tab to view.  See [this guide](https://github.com/codepath/android_guides/wiki/Debugging-with-Stetho) for more context.
