@@ -2,24 +2,11 @@
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.4.2'
+        classpath 'com.android.tools.build:gradle:4.0.1'
     }
-}
-
-plugins {
-    id "com.jfrog.bintray" version "1.8.4"
-}
-
-plugins {
-    id "com.github.dcendents.android-maven" version "2.1"
-}
-
-bintray {
-    publications = []
-    configurations = []
 }
 
 allprojects {
