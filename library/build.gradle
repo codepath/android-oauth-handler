@@ -1,14 +1,12 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.github.dcendents.android-maven'
-apply plugin: 'com.jfrog.bintray'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
-// https://github.com/bintray/gradle-bintray-plugin/issues/74#issuecomment-168367341
-// https://github.com/dcendents/android-maven-gradle-plugin/issues/9
 ext {
 
     GROUP = 'com.codepath.libraries'
-    BASE_VERSION = "2.1"
-    VERSION_NAME = "2.1.4"
+    BASE_VERSION = "2.3"
+    VERSION_NAME = "2.3.0"
     POM_PACKAGING = "aar"
     POM_DESCRIPTION = "CodePath OAuth Handler"
 
@@ -54,26 +52,65 @@ android {
     }
 }
 
-bintray {
-    user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
-    key = project.hasProperty('bintrayApiKey') ? project.property('bintrayApiKey') : System.getenv('BINTRAY_API_KEY')
+afterEvaluate {
+    publishing {
+        publications {
+            // Creates a Maven publication called "release".
+            release(MavenPublication) {
+                // Applies the component for the release build variant.
+                from components.release
 
-    configurations = ['archives']  // needs apply plugin 'com.jfrog.bintray' to work
+                // You can then customize attributes of the publication as shown below.
+                groupId = GROUP
+                artifactId = POM_ARTIFACT_ID
+                version = VERSION_NAME
 
-    pkg {
-        repo = 'maven'
-        name = 'android-oauth-handler'
-        userOrg = 'codepath'
-        licenses = ['Apache-2.0']
-        vcsUrl = 'https://github.com/codepath/android-oauth-handler.git'
-        version {
-            name = BASE_VERSION
-            desc = POM_NAME
-            released = new Date()
-            vcsTag = VERSION_NAME
+                pom {
+                    name = POM_NAME
+                    url = POM_URL
+                    description = POM_DESCRIPTION
+                    licenses {
+                        license {
+                            name = POM_LICENCE_NAME
+                            url = POM_LICENCE_URL
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = POM_DEVELOPER_ID
+                            name = POM_DEVELOPER_NAME
+                        }
+                    }
+                    scm {
+                        url = POM_SCM_URL
+                    }
+                }
+            }
+        }
+        repositories {
+            maven {
+                name = "Sonatype"
+                credentials {
+                    username = System.getenv('NEXUS_USERNAME')
+                    password = System.getenv('NEXUS_PASSWORD')
+                }
+                def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                setUrl(url)
+            }
         }
     }
+}
 
+signing {
+    // gpg on MacOS is the same as gpg2
+    // ln -s /usr/local/bin/gpg /usr/local/bin/gpg2
+    // Make sure to populate the variables in gradle.properties
+    // signing.gnupg.keyName=XXX
+    // signing.gnupg.passpharse
+    useGpgCmd()
+    sign(publishing.publications)
 }
 
 task sourcesJar(type: Jar) {
@@ -86,7 +123,7 @@ artifacts {
 }
 
 ext {
-  supportVersion = '28.0.0'
+    supportVersion = '28.0.0'
 }
 
 dependencies {
