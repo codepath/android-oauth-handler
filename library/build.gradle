@@ -1,5 +1,6 @@
 apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
 
 ext {
 
@@ -79,6 +80,16 @@ afterEvaluate {
        }
     }
   }
+}
+
+signing {
+    // gpg on MacOS is the same as gpg2
+    // ln -s /usr/local/bin/gpg /usr/local/bin/gpg2
+    // Make sure to populate the variables in gradle.properties
+    // signing.gnupg.keyName=XXX
+    // signing.gnupg.passpharse
+    useGpgCmd()
+    sign(publishing.publications)
 }
 
 task sourcesJar(type: Jar) {
