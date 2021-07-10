@@ -5,8 +5,8 @@ apply plugin: 'signing'
 ext {
 
     GROUP = 'com.codepath.libraries'
-    BASE_VERSION = "2.2"
-    VERSION_NAME = "2.2.0"
+    BASE_VERSION = "2.3"
+    VERSION_NAME = "2.3.0"
     POM_PACKAGING = "aar"
     POM_DESCRIPTION = "CodePath OAuth Handler"
 
