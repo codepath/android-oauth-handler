@@ -64,22 +64,43 @@ afterEvaluate {
                 groupId = GROUP
                 artifactId = POM_ARTIFACT_ID
                 version = VERSION_NAME
+
+                pom {
+                    name = POM_NAME
+                    url = POM_URL
+                    description = POM_DESCRIPTION
+                    licenses {
+                        license {
+                            name = POM_LICENCE_NAME
+                            url = POM_LICENCE_URL
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = POM_DEVELOPER_ID
+                            name = POM_DEVELOPER_NAME
+                        }
+                    }
+                    scm {
+                        url = POM_SCM_URL
+                    }
+                }
             }
         }
-	repositories {
-	   maven {
-	     name = "Sonatype"
-	     credentials {
-               username = System.getenv('NEXUS_USERNAME')
-	       password = System.getenv('NEXUS_PASSWORD')
-             }
-             def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
-             def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
-             url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
-	     setUrl(url)
-       }
+        repositories {
+            maven {
+                name = "Sonatype"
+                credentials {
+                    username = System.getenv('NEXUS_USERNAME')
+                    password = System.getenv('NEXUS_PASSWORD')
+                }
+                def releasesRepoUrl = 'https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/'
+                def snapshotsRepoUrl = 'https://s01.oss.sonatype.org/content/repositories/snapshots/'
+                url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+                setUrl(url)
+            }
+        }
     }
-  }
 }
 
 signing {
@@ -102,7 +123,7 @@ artifacts {
 }
 
 ext {
-  supportVersion = '28.0.0'
+    supportVersion = '28.0.0'
 }
 
 dependencies {
